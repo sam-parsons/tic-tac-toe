@@ -29,7 +29,7 @@ public class Main {
 
                 board.printBoard();
                 int[] moveArrX = board.nextMove(1);
-                System.out.println((moveArrX[0] + 1) + ", " + (moveArrX[1] + 1));
+                System.out.println("Next Move: " + (moveArrX[0] + 1) + ", " + (moveArrX[1] + 1));
 
                 System.out.println();
                 System.out.print("Player 'X' - Enter the row to be marked: ");
@@ -44,7 +44,7 @@ public class Main {
                     for (int i = 0; i < 40; i++) System.out.println();
                     board.printBoard();
                     int[] moveArrO = board.nextMove(0);
-                    System.out.println((moveArrO[0] + 1) + ", " + (moveArrO[1] + 1));
+                    System.out.println("Next Move: " + (moveArrO[0] + 1) + ", " + (moveArrO[1] + 1));
 
                     System.out.println();
                     System.out.print("Player 'O' - Enter the row to be marked: ");

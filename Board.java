@@ -450,9 +450,15 @@ public class Board {
 
         } else if (move == 4) {
 
-        } else { // unfinished
-            finalMove[0] = 1;
-            finalMove[1] = 1;
+        } else if (move == 5 || move == 6) {
+
+        } else if (move == 7) {
+            
+        } else if (move == 8) {
+            
+        }  else { // if move isn't >= 0 and/or <= 8
+            finalMove[0] = -1;
+            finalMove[1] = -1;
             return finalMove;
         }
         return finalMove;
