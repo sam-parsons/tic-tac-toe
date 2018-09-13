@@ -341,6 +341,7 @@ public class Board {
                     opposite = 0;
                 }
 
+                // moveArr is a speculation on possible matches
                 int[] moveArr = new int[4];
                 for (int i = 0; i < 4; i++) moveArr[i] = -1;
                 int[] first = new int[2];
@@ -351,6 +352,7 @@ public class Board {
                 second[0] = -1;
                 second[1] = -1;
 
+                // finding a position of an opposite symbol on the board
                 for (int i = 0; i < 3; i ++) {
                     for (int j = 0; j < 3; j++) {
                         if (gameBoard[i][j] == opposite) {
@@ -364,41 +366,59 @@ public class Board {
 
                 System.out.println("Opposite coordinates: " + first[0] + ", " + first[1]);
 
+                // check if there are adjacent opposite symbols
                 if (this.isAdjacent(first[0], first[1], opposite)) {
 
                     int[] adjArr = new int[2];
-                    adjArr = getAdjacent(first[0], first[1]);
+                    // get the coordinates for the adjacent opposite symbol
+                    adjArr = this.getAdjacent(first[0], first[1]);
+                    System.out.print("Adjacent opposite symbol ");
                     for (int i = 0; i < 2; i++) {
-                        System.out.println(adjArr[i]);
+                        System.out.print(adjArr[i] + " ");
                     }
+                    System.out.println();
                     moveArr[0] = first[0];
                     moveArr[1] = first[1];
                     moveArr[2] = adjArr[0];
                     moveArr[3] = adjArr[1];
-                    System.out.println("Adjacent coordinates: " + adjArr[0] + ", " + adjArr[1]);
+
+                // if there are outer matching symbols, for the corners  
+                } else if (this.isOuterMatch(first[0], first[1], opposite)) {
+
+                    int[] outerArr = new int[2];
+                    outerArr = this.getOuterMatch(first[0], first[1], opposite);
+                    System.out.println("outer opposite coordinates");
+                    for (int i = 0; i < 2; i++) {
+                        System.out.println(outerArr[i]);
+                    }
+                    moveArr[0] = first[0];
+                    moveArr[1] = first[1];
+                    moveArr[2] = outerArr[0];
+                    moveArr[3] = outerArr[1];
 
                 }
 
-                // do circumference scan (make method)
-
+                // find the position of a similar symbol
                 int[] tempArr = new int[2];
-                    for (int i = 0; i < 2; i++) tempArr[i] = -1;
-                    for (int i = 0; i < 3; i ++) {
-                        for (int j = 0; j < 3; j++) {
-                            if (gameBoard[i][j] == symbol) {
-                                if (tempArr[0] == -1) {
-                                    tempArr[0] = i;
-                                    tempArr[1] = j;
-                                }
+                for (int i = 0; i < 2; i++) tempArr[i] = -1;
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == symbol) {
+                            if (tempArr[0] == -1) {
+                                tempArr[0] = i;
+                                tempArr[1] = j;
                             }
                         }
                     }
+                }
 
+                // checks if there at least one adjacent or outer match for the opposite symbol
                 if (moveArr[0] != -1) {
 
                     System.out.println("Same symbol coordinates: ");
                     for (int i = 0; i < 2; i++) System.out.println(tempArr[i]);
 
+                    // if the potential third block forms a winning sequence
                     if (this.isPowerBloc(moveArr)) {
                         System.out.println("PowerBloc");
 
@@ -408,6 +428,7 @@ public class Board {
                         finalMove[1] = powerPoints[1];
                         return finalMove;
 
+                    // if moveArr doesn't form a winning solution, use random    
                     } else {
 
                         int temp1 = -1;
@@ -426,7 +447,11 @@ public class Board {
 
                     }
 
+                // this means there are two opposing symbol that are in a disjunct position,
+                // therefore use the above logic for the same symbol positions    
                 } else {
+
+                    // not random, offensive strategy
 
                     int temp1 = -1;
                     int temp2 = -1;
@@ -501,15 +526,15 @@ public class Board {
 
                     // for when there are outer ring opposite symbols
 
-                } else if (this.isAdjacent()/*the same*/) {
+                } /*else if (this.isAdjacent()/the same/) {
 
                     // if there is an adjacent same symbol
 
-                 else if () {
+                } else if () {
 
                     // for outer ring same symbols
 
-                } else {
+                }*/ else {
 
                     // do circumference scan (make method)
 
@@ -530,79 +555,79 @@ public class Board {
         return finalMove;
     }
 
-    public boolean isAdjacent(int row, int col, int symbol) {
+    public boolean isAdjacent(int row, int col, int symbolIA) {
         boolean isAdjacent = false;
 
         if (row == 0 && col == 0) {
-            if (gameBoard[0][1] == symbol) {
+            if (gameBoard[0][1] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][0] == symbol) {
+            } else if (gameBoard[1][0] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         } else if (row == 0 && col == 1) {
-            if (gameBoard[0][0] == symbol) {
+            if (gameBoard[0][0] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[0][2] == symbol) {
+            } else if (gameBoard[0][2] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         } else if (row == 0 && col == 2) {
-            if (gameBoard[0][1] == symbol) {
+            if (gameBoard[0][1] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][2] == symbol) {
+            } else if (gameBoard[1][2] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         } else if (row == 1 && col == 0) {
-            if (gameBoard[0][0] == symbol) {
+            if (gameBoard[0][0] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[2][0] == symbol) {
+            } else if (gameBoard[2][0] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         } else if (row == 1 && col == 1) {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (gameBoard[i][j] == symbol && (i != 1 && j != 1)) {
+                    if (gameBoard[i][j] == symbolIA && (i != 1 && j != 1)) {
                         isAdjacent = true;
                     }
                 }
             }
         } else if (row == 1 && col == 2) {
-            if (gameBoard[0][2] == symbol) {
+            if (gameBoard[0][2] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[2][2] == symbol) {
+            } else if (gameBoard[2][2] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         } else if (row == 2 && col == 0) {
-            if (gameBoard[1][0] == symbol) {
+            if (gameBoard[1][0] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[2][1] == symbol) {
+            } else if (gameBoard[2][1] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         } else if (row == 2 && col == 1) {
-            if (gameBoard[2][0] == symbol) {
+            if (gameBoard[2][0] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[2][2] == symbol) {
+            } else if (gameBoard[2][2] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         } else if (row == 2 && col == 2) {
-            if (gameBoard[2][1] == symbol) {
+            if (gameBoard[2][1] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][2] == symbol) {
+            } else if (gameBoard[1][2] == symbolIA) {
                 isAdjacent = true;
-            } else if (gameBoard[1][1] == symbol) {
+            } else if (gameBoard[1][1] == symbolIA) {
                 isAdjacent = true;
             }
         }
@@ -690,7 +715,7 @@ public class Board {
         return isPairAdjacent;
     }
 
-    public int[] getAdjacent(int row, int col) {
+    public int[] getAdjacent(int rowGA, int colGA) {
         int[] adjacent = new int[2];
 
         adjacent[0] = -1;
@@ -698,7 +723,7 @@ public class Board {
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if ((i != row || j != col) && this.isPairAdjacent(row,col,i,j)) {
+                if ((i != rowGA || j != colGA) && this.isPairAdjacent(rowGA,colGA,i,j)) {
                     if (adjacent[0] == -1) {
                         adjacent[0] = i;
                         adjacent[1] = j;    
@@ -1065,133 +1090,133 @@ public class Board {
         return powerPoint;
     }
 
-    public boolean isOuterMatch(int row, int col, int symbol) {
-        boolean outerMatch = false;
+    public boolean isOuterMatch(int rowIOM, int colIOM, int symbolIMO) {
+        boolean outerMatchTF = false;
 
-        if (row == 0 && col == 0) {
-            if (gameBoard[2][2] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[0][2] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[2][0] == symbol) {
-                outerMatch = true;
+        if (rowIOM == 0 && colIOM == 0) {
+            if (gameBoard[2][2] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[0][2] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[2][0] == symbolIMO) {
+                outerMatchTF = true;
             }
-        } else if (row == 0 && col == 1) {
-            if (gameBoard[2][1] == symbol) {
-                outerMatch = true;
+        } else if (rowIOM == 0 && colIOM == 1) {
+            if (gameBoard[2][1] == symbolIMO) {
+                outerMatchTF = true;
             }
-        } else if (row == 0 && col == 2) {
-            if (gameBoard[0][0] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[2][0] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[2][2] == symbol) {
-                outerMatch = true;
+        } else if (rowIOM == 0 && colIOM == 2) {
+            if (gameBoard[0][0] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[2][0] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[2][2] == symbolIMO) {
+                outerMatchTF = true;
             }
-        } else if (row == 1 && col == 0) {
-            if (gameBoard[1][2] == symbol) {
-                outerMatch = true;
+        } else if (rowIOM == 1 && colIOM == 0) {
+            if (gameBoard[1][2] == symbolIMO) {
+                outerMatchTF = true;
             }
-        } else if (row == 1 && col == 1) {
+        } else if (rowIOM == 1 && colIOM == 1) {
            
-        } else if (row == 1 && col == 2) {
-            if (gameBoard[1][0] == symbol) {
-                outerMatch = true;
+        } else if (rowIOM == 1 && colIOM == 2) {
+            if (gameBoard[1][0] == symbolIMO) {
+                outerMatchTF = true;
             }
-        } else if (row == 2 && col == 0) {
-            if (gameBoard[0][2] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[0][0] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[2][2] == symbol) {
-                outerMatch = true;
+        } else if (rowIOM == 2 && colIOM == 0) {
+            if (gameBoard[0][2] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[0][0] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[2][2] == symbolIMO) {
+                outerMatchTF = true;
             }
-        } else if (row == 2 && col == 1) {
-            if (gameBoard[0][1] == symbol) {
-                outerMatch = true;
+        } else if (rowIOM == 2 && colIOM == 1) {
+            if (gameBoard[0][1] == symbolIMO) {
+                outerMatchTF = true;
             }
-        } else if (row == 2 && col == 2) {
-            if (gameBoard[0][0] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[0][2] == symbol) {
-                outerMatch = true;
-            } else if (gameBoard[2][0] == symbol) {
-                outerMatch = true;
+        } else if (rowIOM == 2 && colIOM == 2) {
+            if (gameBoard[0][0] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[0][2] == symbolIMO) {
+                outerMatchTF = true;
+            } else if (gameBoard[2][0] == symbolIMO) {
+                outerMatchTF = true;
             }
         }
 
-        return outerMatch;
+        return outerMatchTF;
     }
 
-    public int[] getOuterMatch(int row, int col) {
+    public int[] getOuterMatch(int rowOMI, int colOMI, int symbolGOM) {
         int[] outerMatch = new int[2];
 
         outerMatch[0] = -1;
         outerMatch[1] = -1;
 
-        if (row == 0 && col == 0) {
-            if (gameBoard[2][2] == symbol) {
+        if (rowOMI == 0 && colOMI == 0) {
+            if (gameBoard[2][2] == symbolGOM) {
                 outerMatch[0] = 2;
                 outerMatch[1] = 2;
-            } else if (gameBoard[0][2] == symbol) {
+            } else if (gameBoard[0][2] == symbolGOM) {
                 outerMatch[0] = 0;
                 outerMatch[1] = 2;
-            } else if (gameBoard[2][0] == symbol) {
+            } else if (gameBoard[2][0] == symbolGOM) {
                 outerMatch[0] = 2;
                 outerMatch[1] = 0;
             }
-        } else if (row == 0 && col == 1) {
-            if (gameBoard[2][1] == symbol) {
+        } else if (rowOMI == 0 && colOMI == 1) {
+            if (gameBoard[2][1] == symbolGOM) {
                 outerMatch[0] = 2;
                 outerMatch[1] = 1;
             }
-        } else if (row == 0 && col == 2) {
-            if (gameBoard[2][0] == symbol) {
+        } else if (rowOMI == 0 && colOMI == 2) {
+            if (gameBoard[2][0] == symbolGOM) {
                 outerMatch[0] = 2;
                 outerMatch[1] = 0;
-            } else if (gameBoard[2][2] == symbol) {
+            } else if (gameBoard[2][2] == symbolGOM) {
                 outerMatch[0] = 2;
                 outerMatch[1] = 2;
-            } else if (gameBoard[0][0] == symbol) {
+            } else if (gameBoard[0][0] == symbolGOM) {
                 outerMatch[0] = 0;
                 outerMatch[1] = 0;
             }
-        } else if (row == 1 && col == 0) {
-            if (gameBoard[1][2] == symbol) {
+        } else if (rowOMI == 1 && colOMI == 0) {
+            if (gameBoard[1][2] == symbolGOM) {
                 outerMatch[0] = 1;
                 outerMatch[1] = 2;
             }
-        } else if (row == 1 && col == 1) {
-           
-        } else if (row == 1 && col == 2) {
-            if (gameBoard[1][0] == symbol) {
+        } else if (rowOMI == 1 && colOMI == 1) {
+           System.out.println("WHY");
+        } else if (rowOMI == 1 && colOMI == 2) {
+            if (gameBoard[1][0] == symbolGOM) {
                 outerMatch[0] = 1;
                 outerMatch[1] = 0;
             }
-        } else if (row == 2 && col == 0) {
-            if (gameBoard[0][2] == symbol) {
+        } else if (rowOMI == 2 && colOMI == 0) {
+            if (gameBoard[0][2] == symbolGOM) {
                 outerMatch[0] = 0;
                 outerMatch[1] = 2;
-            } else if (gameBoard[0][0] == symbol) {
+            } else if (gameBoard[0][0] == symbolGOM) {
                 outerMatch[0] = 0;
                 outerMatch[1] = 0;
-            } else if (gameBoard[2][2] == symbol) {
+            } else if (gameBoard[2][2] == symbolGOM) {
                 outerMatch[0] = 2;
                 outerMatch[1] = 2;
             }
-        } else if (row == 2 && col == 1) {
-            if (gameBoard[0][1] == symbol) {
+        } else if (rowOMI == 2 && colOMI == 1) {
+            if (gameBoard[0][1] == symbolGOM) {
                 outerMatch[0] = 0;
                 outerMatch[1] = 1;
             }
-        } else if (row == 2 && col == 2) {
-            if (gameBoard[0][0] == symbol) {
+        } else if (rowOMI == 2 && colOMI == 2) {
+            if (gameBoard[0][0] == symbolGOM) {
                 outerMatch[0] = 0;
                 outerMatch[1] = 0;
-            } else if (gameBoard[2][0] == symbol) {
+            } else if (gameBoard[2][0] == symbolGOM) {
                 outerMatch[0] = 2;
                 outerMatch[1] = 0;
-            } else if (gameBoard[0][2] == symbol) {
+            } else if (gameBoard[0][2] == symbolGOM) {
                 outerMatch[0] = 0;
                 outerMatch[1] = 2;
             }
@@ -1200,59 +1225,80 @@ public class Board {
         return outerMatch;
     }
 
-    public int[] getOuterPowerPoint(int[] arr, int symbol) { // PLEASE FIX THIS
+    public int[] getOuterPowerPoint(int[] arr, int symbolOPP) { // PLEASE FIX THIS
         int[] outerPowerPoint = new int[2];
+
+        int rowOPP = arr[0];
+        int colOPP = arr[1];
 
         outerPowerPoint[0] = -1;
         outerPowerPoint[1] = -1;
 
-        if (row == 0 && col == 0) {
-            if (gameBoard[2][2] == symbol && gameBoard[1][1] == -1) {
-                outerPowerPoint[0] = 2;
-                outerPowerPoint[1] = 2;
-            } else if (gameBoard[2][0] == symbol && gameBoard[1][0] == -1) {
-                outerPowerPoint[0] = 2;
-                outerPowerPoint[1] = 2;
-            } else if (gameBoard[0][2] == symbol && gameBoard[0][1] == -1) {
-                outerPowerPoint[0] = 2;
-                outerPowerPoint[1] = 2;
-            }
-        } else if (row == 0 && col == 1 && gameBoard[1][1] == -1) {
-            if (gameBoard[2][1] == symbol) {
-                outerPowerPoint[0] = 2;
+        if (rowOPP == 0 && colOPP == 0) {
+            if (gameBoard[2][2] == symbolOPP && gameBoard[1][1] == -1) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 1;
+            } else if (gameBoard[2][0] == symbolOPP && gameBoard[1][0] == -1) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 0;
+            } else if (gameBoard[0][2] == symbolOPP && gameBoard[0][1] == -1) {
+                outerPowerPoint[0] = 0;
                 outerPowerPoint[1] = 1;
             }
-        } else if (row == 0 && col == 2 && gameBoard[1][1] == -1) {
-            if (gameBoard[2][0] == symbol) {
-                outerPowerPoint[0] = 2;
-                outerPowerPoint[1] = 0;
+        } else if (rowOPP == 0 && colOPP == 1 && gameBoard[1][1] == -1) {
+            if (gameBoard[2][1] == symbolOPP) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 1;
             }
-        } else if (row == 1 && col == 0 && gameBoard[1][1] == -1) {
-            if (gameBoard[1][2] == symbol) {
+        } else if (rowOPP == 0 && colOPP == 2) {
+            if (gameBoard[2][0] == symbolOPP && gameBoard[1][1] == -1) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 1;
+            } else if (gameBoard[0][0] == symbolOPP && gameBoard[0][1] == -1) {
+                outerPowerPoint[0] = 0;
+                outerPowerPoint[1] = 1;
+            } else if (gameBoard[2][2] == symbolOPP && gameBoard[1][2] == -1) {
                 outerPowerPoint[0] = 1;
                 outerPowerPoint[1] = 2;
             }
-        } else if (row == 1 && col == 1) {
+        } else if (rowOPP == 1 && colOPP == 0 && gameBoard[1][1] == -1) {
+            if (gameBoard[1][2] == symbolOPP) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 1;
+            }
+        } else if (rowOPP == 1 && colOPP == 1) {
            
-        } else if (row == 1 && col == 2 && gameBoard[1][1] == -1) {
-            if (gameBoard[1][0] == symbol) {
+        } else if (rowOPP == 1 && colOPP == 2 && gameBoard[1][1] == -1) {
+            if (gameBoard[1][0] == symbolOPP) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 1;
+            }
+        } else if (rowOPP == 2 && colOPP == 0) {
+            if (gameBoard[0][2] == symbolOPP && gameBoard[1][1] == -1) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 1;
+            } else if (gameBoard[2][2] == symbolOPP && gameBoard[2][1] == -1) {
+                outerPowerPoint[0] = 2;
+                outerPowerPoint[1] = 1;
+            } else if (gameBoard[0][0] == symbolOPP && gameBoard[1][0] == -1) {
                 outerPowerPoint[0] = 1;
                 outerPowerPoint[1] = 0;
             }
-        } else if (row == 2 && col == 0 && gameBoard[1][1] == -1) {
-            if (gameBoard[0][2] == symbol) {
-                outerPowerPoint[0] = 0;
-                outerPowerPoint[1] = 2;
-            }
-        } else if (row == 2 && col == 1 && gameBoard[1][1] == -1) {
-            if (gameBoard[0][1] == symbol) {
-                outerPowerPoint[0] = 0;
+        } else if (rowOPP == 2 && colOPP == 1 && gameBoard[1][1] == -1) {
+            if (gameBoard[0][1] == symbolOPP) {
+                outerPowerPoint[0] = 1;
                 outerPowerPoint[1] = 1;
             }
-        } else if (row == 2 && col == 2 && gameBoard[1][1] == -1) {
-            if (gameBoard[0][0] == symbol) {
-                outerPowerPoint[0] = 0;
-                outerPowerPoint[1] = 0;
+        } else if (rowOPP == 2 && colOPP == 2) {
+            if (gameBoard[0][0] == symbolOPP && gameBoard[1][1] == -1) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 1;
+            } else if (gameBoard[2][0] == symbolOPP && gameBoard[2][1] == -1) {
+                outerPowerPoint[0] = 2;
+                outerPowerPoint[1] = 1;
+            } else if (gameBoard[0][2] == symbolOPP && gameBoard[1][2] == -1) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 2;
             }
         }
 
