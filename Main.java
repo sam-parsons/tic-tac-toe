@@ -1,5 +1,14 @@
 import java.util.Scanner;
 
+/**
+ * OPEN TICKETS
+ * - Game should never progress after board is full
+ * 
+ * USEFUL DIAGNOSTICS
+ * - print out game log to file
+ * - use 1,2,3 and A,B,C as markers for keeping track of game history
+ */
+
 public class Main {
 
     public static void main(String[] args) {

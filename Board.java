@@ -2,9 +2,9 @@ import java.util.Random;
 
 /**
  * OPEN TICKETS
- * - Move 4, pick any random corner?
- * - Move 4, fix business at the bottom
- * - Move 8
+ * - getOuterPowerPoint
+ * - Move 6
+ * - Move 5 - when checking for an adjacent same symbol, check if it will form a PowerBloc!!
  */
 
 public class Board {
@@ -25,6 +25,8 @@ public class Board {
             gameBoard[row][column] = 0;
         } else if (symbol == 1) {
             gameBoard[row][column] = 1;
+        } else if (symbol == -1) {
+            gameBoard[row][column] = -1;
         }
     }
 
@@ -146,8 +148,22 @@ public class Board {
             finalMove[1] = 1;
             return finalMove;
         } else if (move == 1) { // Second move
-            if (gameBoard[1][1] >= 0) {
-                // pick any open corner
+            if (gameBoard[1][1] >= 0) { // pick any corner
+                int tempM1Row = -1;
+                int tempM1Col = -1;
+                Random randM1 = new Random();
+                do {
+                    tempM1Row = randM1.nextInt(2);
+                    tempM1Col = randM1.nextInt(2);
+                    if (tempM1Row == 1) {
+                        tempM1Row = 2;
+                    } else if (tempM1Col == 1) {
+                        tempM1Col = 2;
+                    }
+                } while (tempM1Row != 1 && tempM1Col != 1 && gameBoard[tempM1Row][tempM1Col] != -1);
+
+                finalMove[0] = tempM1Row;
+                finalMove[1] = tempM1Col;
                 return finalMove;
             } else {
                 finalMove[0] = 1;
@@ -679,11 +695,133 @@ public class Board {
 
             return finalMove;
 
-        } else if (move == 5 || move == 6) {
-
+        } else if (move == 5) { // Sixth move
+            
             finalMove[0] = -1;
             finalMove[1] = -1;
             return finalMove;
+
+        } else if (move == 6) { // Seventh move
+
+            if (gameBoard[1][1] != -1) {
+                int opposite;
+                if (symbol == 0) {
+                    opposite = 1;
+                } else {
+                    opposite = 0;
+                }
+
+                int[] moveArrOpen = new int[4]; // try not to use this?
+                for (int i = 0; i < 4; i++) moveArrOpen[i] = -1;
+                int[] firstOpen = new int[2]; // array for first open coordinate
+                int[] secondOpen = new int[2]; // array for second open coordinate
+                int[] thirdOpen = new int[2]; // array for third open coordinate
+
+                firstOpen[0] = -1;
+                firstOpen[1] = -1;
+                secondOpen[0] = -1;
+                secondOpen[1] = -1;
+                thirdOpen[0] = -1;
+                thirdOpen[1] = -1;
+
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == -1) {
+                            if (firstOpen[0] == -1) {
+                                firstOpen[0] = i;
+                                firstOpen[1] = j;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == -1 && i != firstOpen[0] && j != firstOpen[1]) {
+                            if (secondOpen[0] == -1) {
+                                secondOpen[0] = i;
+                                secondOpen[1] = j;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == -1 && i != firstOpen[0] && j != firstOpen[1] && i != secondOpen[0] && j != secondOpen[1]) {
+                            if (thirdOpen[0] == -1) {
+                                thirdOpen[0] = i;
+                                thirdOpen[1] = j;
+                            }
+                        }
+                    }
+                }
+
+                // check is opposite symbol can win with either position
+                if (this.checkWin(firstOpen[0], firstOpen[0], opposite)) {
+
+                    finalMove[0] = firstOpen[0];
+                    finalMove[1] = firstOpen[1];
+                    return finalMove;
+
+                } else if (this.checkWin(secondOpen[0], secondOpen[0], opposite)) {
+
+                    finalMove[0] = secondOpen[0];
+                    finalMove[1] = secondOpen[1];
+                    return finalMove;
+
+                } else if (this.checkWin(thirdOpen[0], thirdOpen[0], opposite)) {
+
+                    finalMove[0] = thirdOpen[0];
+                    finalMove[1] = thirdOpen[1];
+                    return finalMove;
+
+                }
+                
+
+                // check if same symbol can win with either position
+
+                if (this.checkWin(firstOpen[0], firstOpen[0], symbol)) {
+
+                    finalMove[0] = firstOpen[0];
+                    finalMove[1] = firstOpen[1];
+                    return finalMove;
+
+                } else if (this.checkWin(secondOpen[0], secondOpen[0], symbol)) {
+
+                    finalMove[0] = secondOpen[0];
+                    finalMove[1] = secondOpen[1];
+                    return finalMove;
+
+                } else if (this.checkWin(thirdOpen[0], thirdOpen[0], symbol)) {
+
+                    finalMove[0] = thirdOpen[0];
+                    finalMove[1] = thirdOpen[1];
+                    return finalMove;
+
+                }
+
+                // if not either of those, pick random
+
+                int temp1Open;
+                int temp2Open;
+                Random rand = new Random();
+
+                do {
+                    temp1Open = rand.nextInt(3);
+                    temp2Open = rand.nextInt(3);
+                    
+                } while (gameBoard[temp1Open][temp2Open] != -1);
+
+                finalMove[0] = temp1Open;
+                finalMove[1] = temp2Open;
+                return finalMove;
+
+            } else { // if center position is open
+                finalMove[0] = 1;
+                finalMove[1] = 1;
+                return finalMove;
+            }
 
         } else if (move == 7) { // second to last move
 
@@ -707,7 +845,7 @@ public class Board {
 
                 for (int i = 0; i < 3; i ++) {
                     for (int j = 0; j < 3; j++) {
-                        if (gameBoard[i][j] == opposite) {
+                        if (gameBoard[i][j] == -1) {
                             if (firstOpen[0] == -1) {
                                 firstOpen[0] = i;
                                 firstOpen[1] = j;
@@ -718,7 +856,7 @@ public class Board {
 
                 for (int i = 0; i < 3; i ++) {
                     for (int j = 0; j < 3; j++) {
-                        if (gameBoard[i][j] == symbol) {
+                        if (gameBoard[i][j] == -1 && i != firstOpen[0] && j != firstOpen[1]) {
                             if (secondOpen[0] == -1) {
                                 secondOpen[0] = i;
                                 secondOpen[1] = j;
@@ -775,12 +913,12 @@ public class Board {
                 finalMove[1] = temp2Open;
                 return finalMove;
 
-                } else { // if center position is open
-                    finalMove[0] = 1;
-                    finalMove[1] = 1;
-                    return finalMove;
-                }
-            
+            } else { // if center position is open
+                finalMove[0] = 1;
+                finalMove[1] = 1;
+                return finalMove;
+            }
+        
         } else if (move == 8) { // final move, find remaining open space
             
             int temp1;
