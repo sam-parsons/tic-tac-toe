@@ -1,2 +1,2 @@
 # TicTacToe
-Command line implementation of TicTacToe with a crudely intelligently next-best-move method
+Command line implementation of TicTacToe with a crudely intelligent next-best-move method
