@@ -1,5 +1,12 @@
 import java.util.Random;
 
+/**
+ * OPEN TICKETS
+ * - Move 4, pick any random corner?
+ * - Move 4, fix business at the bottom
+ * - Move 8
+ */
+
 public class Board {
 
     int[][] gameBoard;
@@ -51,12 +58,16 @@ public class Board {
         for (int i = 0; i < 3; i++) {
             if ((gameBoard[i][0] == gameBoard[i][1]) && (gameBoard[i][0] == gameBoard[i][2]) && isWon < 0) {
                 isWon = gameBoard[i][0];
+                return isWon;
             } else if ((gameBoard[0][i] == gameBoard[1][i]) && (gameBoard[0][i] == gameBoard[2][i]) && isWon < 0) {
                 isWon = gameBoard[0][i];
+                return isWon;
             } else if (i == 0 && (gameBoard[i][i] == gameBoard[i+1][i+1]) && (gameBoard[i][i] == gameBoard[i+2][i+2]) && isWon < 0) {
                 isWon = gameBoard[i][i];
+                return isWon;
             } else if (i == 2 && (gameBoard[i][i-2] == gameBoard[i-1][i-1]) && (gameBoard[i][i-2] == gameBoard[i-2][i]) && isWon < 0) {
                 isWon = gameBoard[i][i-2];
+                return isWon;
             }
         }
         return isWon;
@@ -130,11 +141,11 @@ public class Board {
         int move = this.getCount();
         System.out.println("Move: " + (move + 1));
         int[] finalMove = new int[2];
-        if (move == 0) {
+        if (move == 0) { // First move
             finalMove[0] = 1;
             finalMove[1] = 1;
             return finalMove;
-        } else if (move == 1) {
+        } else if (move == 1) { // Second move
             if (gameBoard[1][1] >= 0) {
                 // pick any open corner
                 return finalMove;
@@ -143,7 +154,7 @@ public class Board {
                 finalMove[1] = 1;
                 return finalMove;
             }
-        } else if (move == 2) { // make adjacent move
+        } else if (move == 2) { // Third move, make adjacent move
             if (gameBoard[1][1] == symbol) {
                 int opposite;
                 if (gameBoard[1][1] == 0) {
@@ -331,7 +342,7 @@ public class Board {
                     }
                 }
             }
-        } else if (move == 3) {
+        } else if (move == 3) { // Fourth move
             System.out.println("Move 3");
             if (gameBoard[1][1] != -1) {
                 int opposite;
@@ -475,8 +486,8 @@ public class Board {
                 return finalMove; 
             }   
 
-        } else if (move == 4) {
-            if (gameBoard[1][1] == -1) {
+        } else if (move == 4) {  // Fifth move
+            if (gameBoard[1][1] != -1) {
                 int opposite;
                 if (symbol == 0) {
                     opposite = 1;
@@ -484,10 +495,10 @@ public class Board {
                     opposite = 0;
                 }
 
-                int[] moveArr = new int[4];
+                int[] moveArr = new int[4]; // try not to use this?
                 for (int i = 0; i < 4; i++) moveArr[i] = -1;
-                int[] first = new int[2];
-                int[] second = new int[2];
+                int[] first = new int[2]; // array for opposite symbol coordinates
+                int[] second = new int[2]; // array for same symbol coordinates
 
                 first[0] = -1;
                 first[1] = -1;
@@ -505,48 +516,287 @@ public class Board {
                     }
                 }
 
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == symbol) {
+                            if (second[0] == -1) {
+                                second[0] = i;
+                                second[1] = j;
+                            }
+                        }
+                    }
+                }
+
                 System.out.println("Opposite coordinates: " + first[0] + ", " + first[1]);
 
                 if (this.isAdjacent(first[0], first[1], opposite)) {
 
                     int[] adjArr = new int[2];
+                    int[] tempAdjArr = new int[4];
                     adjArr = getAdjacent(first[0], first[1]);
                     for (int i = 0; i < 2; i++) {
                         System.out.println(adjArr[i]);
                     }
-                    moveArr[0] = first[0];
-                    moveArr[1] = first[1];
-                    moveArr[2] = adjArr[0];
-                    moveArr[3] = adjArr[1];
+                    tempAdjArr[0] = first[0];
+                    tempAdjArr[1] = first[1];
+                    tempAdjArr[2] = adjArr[0];
+                    tempAdjArr[3] = adjArr[1];
                     System.out.println("Adjacent coordinates: " + adjArr[0] + ", " + adjArr[1]);
 
                     // do the two adjacent spaces form PowerBloc, if not then 
 
-                } else if (this.isOuterMatch(first[0], first[1], opposite)) {
+                    if (this.isPowerBloc(tempAdjArr)) {
+
+                        finalMove[0] = tempAdjArr[2];
+                        finalMove[1] = tempAdjArr[3];
+                        return finalMove;
+
+                    } else { // if opposite symbols are adjacent, but don't form PowerBloc
+
+                        if (this.isOuterMatch(first[0], first[1], opposite)) {
+
+                            // for when there are outer ring opposite symbols
+
+                            // check if intermediate space is open
+
+                            int[] tempGOM = this.getOuterMatch(first[0], first[1], opposite);
+                            int[] tempGOPP = this.getOuterPowerPoint(first, opposite);
+
+                            if (tempGOPP[0] != -1) { // if there is an open intermediate space
+
+                                finalMove[0] = tempGOPP[0];
+                                finalMove[1] = tempGOPP[1];
+                                return finalMove;
+
+                            } else { // if there is not an open intermediate space
+                                // go to same symbol process
+                                System.out.println("no open intermediate space - to same symbol process");
+                            }
+        
+                        } 
+                    }
+                }
+                
+                if (this.isOuterMatch(first[0], first[1], opposite)) {
 
                     // for when there are outer ring opposite symbols
 
-                } /*else if (this.isAdjacent()/the same/) {
+                    // might not need tempGOM
+                    int[] tempGOM = this.getOuterMatch(first[0], first[1], opposite);
+                    int[] tempGOPP = this.getOuterPowerPoint(first, opposite);
+
+                    if (tempGOPP[0] != -1) { // if there is an open intermediate space
+
+                        finalMove[0] = tempGOPP[0];
+                        finalMove[1] = tempGOPP[1];
+                        return finalMove;
+
+                    } else { // if there is not an open intermediate space
+                            // go to same symbol process
+                            System.out.println("no open intermediate space - to same symbol process");
+                    }
+
+                } 
+
+                // finished checking on opposite symbols, begin same symbol process
+                System.out.println("Same symbol process");
+
+                if (this.isAdjacent(second[0], second[1], symbol)) {
 
                     // if there is an adjacent same symbol
+                    int[] tempIA = this.getAdjacent(second[0], second[1]);
+                    int[] tempAO = new int[4];
+                    tempAO[0] = second[0];
+                    tempAO[1] = second[1];
+                    tempAO[2] = tempIA[0];
+                    tempAO[3] = tempIA[1];
 
-                } else if () {
+                    if (this.isPowerBloc(tempAO)) { // if there is a same symbol PowerBloc
+
+                        int[] tempPP = this.getPowerPoint(tempAO);
+                        finalMove[0] = tempPP[0];
+                        finalMove[1] = tempPP[1];
+                        return finalMove;
+
+                    } else { // if there are adjacent same symbols, but not PowerBloc
+
+                        // go to finding outer match for same symbol
+                        System.out.println("Adjacent same symbols, but not PowerBloc");
+
+                    }
+
+                } 
+                
+                if (this.isOuterMatch(second[0], second[1], symbol)) {
 
                     // for outer ring same symbols
+                    System.out.println("Found outer match for same symbol");
 
-                }*/ else {
+                    int[] outerMatchArr = this.getOuterMatch(second[0], second[1], symbol);
+                    int[] outerMatchPP = this.getOuterPowerPoint(second, symbol);
+                    if (outerMatchPP[0] != -1) {
 
-                    // do circumference scan (make method)
+                        finalMove[0] = outerMatchPP[0];
+                        finalMove[1] = outerMatchPP[1];
+                        return finalMove;
 
-                    // if the two spaces are not adjacent, look for own adjacency
+                    } else { // there is not an intermediate free space between the outer matches
+                        System.out.println("No free space between outer matches of same symbol");
+                    }
+
+                } 
+                
+                if (moveArr[0] == -1) { // check to see if moveArr[0] == -1
+
+                    // if there are no adjacent or outer matches for opposite or
+                    // same symbols, then randomly pick an open position that is adjacent
+                    // to some same symbol
+
+                    System.out.println("Finding random adjacent to same symbol open space");
+                    Random randLast = new Random();
+                    int tempLast1 = -1;
+                    int tempLast2 = -1;
+
+                    do {
+                        
+                        tempLast1 = randLast.nextInt(3);
+                        tempLast2 = randLast.nextInt(3);
+
+                    } while (!this.isAdjacent(tempLast1, tempLast2, symbol) || gameBoard[tempLast1][tempLast2] != -1);
+
+                    finalMove[0] = tempLast1;
+                    finalMove[1] = tempLast2;
+                    return finalMove;
+
                 }
+
+
+            } else { // if center square is open
+                finalMove[0] = 1;
+                finalMove[1] = 1;
+                return finalMove;
             }
+
+            return finalMove;
+
         } else if (move == 5 || move == 6) {
 
-        } else if (move == 7) {
+            finalMove[0] = -1;
+            finalMove[1] = -1;
+            return finalMove;
+
+        } else if (move == 7) { // second to last move
+
+            if (gameBoard[1][1] != -1) {
+                int opposite;
+                if (symbol == 0) {
+                    opposite = 1;
+                } else {
+                    opposite = 0;
+                }
+
+                int[] moveArrOpen = new int[4]; // try not to use this?
+                for (int i = 0; i < 4; i++) moveArrOpen[i] = -1;
+                int[] firstOpen = new int[2]; // array for first open coordinates
+                int[] secondOpen = new int[2]; // array for second open coordinates
+
+                firstOpen[0] = -1;
+                firstOpen[1] = -1;
+                secondOpen[0] = -1;
+                secondOpen[1] = -1;
+
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == opposite) {
+                            if (firstOpen[0] == -1) {
+                                firstOpen[0] = i;
+                                firstOpen[1] = j;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == symbol) {
+                            if (secondOpen[0] == -1) {
+                                secondOpen[0] = i;
+                                secondOpen[1] = j;
+                            }
+                        }
+                    }
+                }
+
+                // check is opposite symbol can win with either position
+                if (this.checkWin(firstOpen[0], firstOpen[0], opposite)) {
+
+                    finalMove[0] = firstOpen[0];
+                    finalMove[1] = firstOpen[1];
+                    return finalMove;
+
+                } else if (this.checkWin(secondOpen[0], secondOpen[0], opposite)) {
+
+                    finalMove[0] = secondOpen[0];
+                    finalMove[1] = secondOpen[1];
+                    return finalMove;
+
+                }
+                
+
+                // check if same symbol can win with either position
+
+                if (this.checkWin(firstOpen[0], firstOpen[0], symbol)) {
+
+                    finalMove[0] = firstOpen[0];
+                    finalMove[1] = firstOpen[1];
+                    return finalMove;
+
+                } else if (this.checkWin(secondOpen[0], secondOpen[0], symbol)) {
+
+                    finalMove[0] = secondOpen[0];
+                    finalMove[1] = secondOpen[1];
+                    return finalMove;
+
+                }
+
+                // if not either of those, pick random
+
+                int temp1Open;
+                int temp2Open;
+                Random rand = new Random();
+
+                do {
+                    temp1Open = rand.nextInt(3);
+                    temp2Open = rand.nextInt(3);
+                    
+                } while (gameBoard[temp1Open][temp2Open] != -1);
+
+                finalMove[0] = temp1Open;
+                finalMove[1] = temp2Open;
+                return finalMove;
+
+                } else { // if center position is open
+                    finalMove[0] = 1;
+                    finalMove[1] = 1;
+                    return finalMove;
+                }
             
-        } else if (move == 8) {
+        } else if (move == 8) { // final move, find remaining open space
             
+            int temp1;
+            int temp2;
+            Random rand = new Random();
+
+            do {
+                temp1 = rand.nextInt(3);
+                temp2 = rand.nextInt(3);
+                
+            } while (gameBoard[temp1][temp2] != -1);
+
+            finalMove[0] = temp1;
+            finalMove[1] = temp2;
+            return finalMove;
+
         }  else { // if move isn't >= 0 and/or <= 8
             finalMove[0] = -1;
             finalMove[1] = -1;
@@ -1421,5 +1671,19 @@ public class Board {
             }
         }
         return oppArr;
+    }
+
+    public boolean checkWin(int rowCW, int colCW, int symbolCW) {
+        boolean checkWin = false;
+
+        this.addElement(rowCW, colCW, symbolCW);
+        if (this.isWon() == -1) {
+            
+        } else if (this.isWon() == 0 || this.isWon() == 1) {
+            checkWin = true;
+        }
+        this.addElement(rowCW, colCW, -1);
+
+        return checkWin;
     }
 }
