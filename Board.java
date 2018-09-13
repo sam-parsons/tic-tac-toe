@@ -379,6 +379,8 @@ public class Board {
 
                 }
 
+                // do circumference scan (make method)
+
                 int[] tempArr = new int[2];
                     for (int i = 0; i < 2; i++) tempArr[i] = -1;
                     for (int i = 0; i < 3; i ++) {
@@ -449,7 +451,71 @@ public class Board {
             }   
 
         } else if (move == 4) {
+            if (gameBoard[1][1] == -1) {
+                int opposite;
+                if (symbol == 0) {
+                    opposite = 1;
+                } else {
+                    opposite = 0;
+                }
 
+                int[] moveArr = new int[4];
+                for (int i = 0; i < 4; i++) moveArr[i] = -1;
+                int[] first = new int[2];
+                int[] second = new int[2];
+
+                first[0] = -1;
+                first[1] = -1;
+                second[0] = -1;
+                second[1] = -1;
+
+                for (int i = 0; i < 3; i ++) {
+                    for (int j = 0; j < 3; j++) {
+                        if (gameBoard[i][j] == opposite) {
+                            if (first[0] == -1) {
+                                first[0] = i;
+                                first[1] = j;
+                            }
+                        }
+                    }
+                }
+
+                System.out.println("Opposite coordinates: " + first[0] + ", " + first[1]);
+
+                if (this.isAdjacent(first[0], first[1], opposite)) {
+
+                    int[] adjArr = new int[2];
+                    adjArr = getAdjacent(first[0], first[1]);
+                    for (int i = 0; i < 2; i++) {
+                        System.out.println(adjArr[i]);
+                    }
+                    moveArr[0] = first[0];
+                    moveArr[1] = first[1];
+                    moveArr[2] = adjArr[0];
+                    moveArr[3] = adjArr[1];
+                    System.out.println("Adjacent coordinates: " + adjArr[0] + ", " + adjArr[1]);
+
+                    // do the two adjacent spaces form PowerBloc, if not then 
+
+                } else if (this.isOuterMatch(first[0], first[1], opposite)) {
+
+                    // for when there are outer ring opposite symbols
+
+                } else if (this.isAdjacent()/*the same*/) {
+
+                    // if there is an adjacent same symbol
+
+                 else if () {
+
+                    // for outer ring same symbols
+
+                } else {
+
+                    // do circumference scan (make method)
+
+                    // if the two spaces are not adjacent, look for own adjacency
+                }
+            }
         } else if (move == 5 || move == 6) {
 
         } else if (move == 7) {
@@ -997,6 +1063,200 @@ public class Board {
         }
 
         return powerPoint;
+    }
+
+    public boolean isOuterMatch(int row, int col, int symbol) {
+        boolean outerMatch = false;
+
+        if (row == 0 && col == 0) {
+            if (gameBoard[2][2] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[0][2] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[2][0] == symbol) {
+                outerMatch = true;
+            }
+        } else if (row == 0 && col == 1) {
+            if (gameBoard[2][1] == symbol) {
+                outerMatch = true;
+            }
+        } else if (row == 0 && col == 2) {
+            if (gameBoard[0][0] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[2][0] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[2][2] == symbol) {
+                outerMatch = true;
+            }
+        } else if (row == 1 && col == 0) {
+            if (gameBoard[1][2] == symbol) {
+                outerMatch = true;
+            }
+        } else if (row == 1 && col == 1) {
+           
+        } else if (row == 1 && col == 2) {
+            if (gameBoard[1][0] == symbol) {
+                outerMatch = true;
+            }
+        } else if (row == 2 && col == 0) {
+            if (gameBoard[0][2] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[0][0] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[2][2] == symbol) {
+                outerMatch = true;
+            }
+        } else if (row == 2 && col == 1) {
+            if (gameBoard[0][1] == symbol) {
+                outerMatch = true;
+            }
+        } else if (row == 2 && col == 2) {
+            if (gameBoard[0][0] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[0][2] == symbol) {
+                outerMatch = true;
+            } else if (gameBoard[2][0] == symbol) {
+                outerMatch = true;
+            }
+        }
+
+        return outerMatch;
+    }
+
+    public int[] getOuterMatch(int row, int col) {
+        int[] outerMatch = new int[2];
+
+        outerMatch[0] = -1;
+        outerMatch[1] = -1;
+
+        if (row == 0 && col == 0) {
+            if (gameBoard[2][2] == symbol) {
+                outerMatch[0] = 2;
+                outerMatch[1] = 2;
+            } else if (gameBoard[0][2] == symbol) {
+                outerMatch[0] = 0;
+                outerMatch[1] = 2;
+            } else if (gameBoard[2][0] == symbol) {
+                outerMatch[0] = 2;
+                outerMatch[1] = 0;
+            }
+        } else if (row == 0 && col == 1) {
+            if (gameBoard[2][1] == symbol) {
+                outerMatch[0] = 2;
+                outerMatch[1] = 1;
+            }
+        } else if (row == 0 && col == 2) {
+            if (gameBoard[2][0] == symbol) {
+                outerMatch[0] = 2;
+                outerMatch[1] = 0;
+            } else if (gameBoard[2][2] == symbol) {
+                outerMatch[0] = 2;
+                outerMatch[1] = 2;
+            } else if (gameBoard[0][0] == symbol) {
+                outerMatch[0] = 0;
+                outerMatch[1] = 0;
+            }
+        } else if (row == 1 && col == 0) {
+            if (gameBoard[1][2] == symbol) {
+                outerMatch[0] = 1;
+                outerMatch[1] = 2;
+            }
+        } else if (row == 1 && col == 1) {
+           
+        } else if (row == 1 && col == 2) {
+            if (gameBoard[1][0] == symbol) {
+                outerMatch[0] = 1;
+                outerMatch[1] = 0;
+            }
+        } else if (row == 2 && col == 0) {
+            if (gameBoard[0][2] == symbol) {
+                outerMatch[0] = 0;
+                outerMatch[1] = 2;
+            } else if (gameBoard[0][0] == symbol) {
+                outerMatch[0] = 0;
+                outerMatch[1] = 0;
+            } else if (gameBoard[2][2] == symbol) {
+                outerMatch[0] = 2;
+                outerMatch[1] = 2;
+            }
+        } else if (row == 2 && col == 1) {
+            if (gameBoard[0][1] == symbol) {
+                outerMatch[0] = 0;
+                outerMatch[1] = 1;
+            }
+        } else if (row == 2 && col == 2) {
+            if (gameBoard[0][0] == symbol) {
+                outerMatch[0] = 0;
+                outerMatch[1] = 0;
+            } else if (gameBoard[2][0] == symbol) {
+                outerMatch[0] = 2;
+                outerMatch[1] = 0;
+            } else if (gameBoard[0][2] == symbol) {
+                outerMatch[0] = 0;
+                outerMatch[1] = 2;
+            }
+        }
+
+        return outerMatch;
+    }
+
+    public int[] getOuterPowerPoint(int[] arr, int symbol) { // PLEASE FIX THIS
+        int[] outerPowerPoint = new int[2];
+
+        outerPowerPoint[0] = -1;
+        outerPowerPoint[1] = -1;
+
+        if (row == 0 && col == 0) {
+            if (gameBoard[2][2] == symbol && gameBoard[1][1] == -1) {
+                outerPowerPoint[0] = 2;
+                outerPowerPoint[1] = 2;
+            } else if (gameBoard[2][0] == symbol && gameBoard[1][0] == -1) {
+                outerPowerPoint[0] = 2;
+                outerPowerPoint[1] = 2;
+            } else if (gameBoard[0][2] == symbol && gameBoard[0][1] == -1) {
+                outerPowerPoint[0] = 2;
+                outerPowerPoint[1] = 2;
+            }
+        } else if (row == 0 && col == 1 && gameBoard[1][1] == -1) {
+            if (gameBoard[2][1] == symbol) {
+                outerPowerPoint[0] = 2;
+                outerPowerPoint[1] = 1;
+            }
+        } else if (row == 0 && col == 2 && gameBoard[1][1] == -1) {
+            if (gameBoard[2][0] == symbol) {
+                outerPowerPoint[0] = 2;
+                outerPowerPoint[1] = 0;
+            }
+        } else if (row == 1 && col == 0 && gameBoard[1][1] == -1) {
+            if (gameBoard[1][2] == symbol) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 2;
+            }
+        } else if (row == 1 && col == 1) {
+           
+        } else if (row == 1 && col == 2 && gameBoard[1][1] == -1) {
+            if (gameBoard[1][0] == symbol) {
+                outerPowerPoint[0] = 1;
+                outerPowerPoint[1] = 0;
+            }
+        } else if (row == 2 && col == 0 && gameBoard[1][1] == -1) {
+            if (gameBoard[0][2] == symbol) {
+                outerPowerPoint[0] = 0;
+                outerPowerPoint[1] = 2;
+            }
+        } else if (row == 2 && col == 1 && gameBoard[1][1] == -1) {
+            if (gameBoard[0][1] == symbol) {
+                outerPowerPoint[0] = 0;
+                outerPowerPoint[1] = 1;
+            }
+        } else if (row == 2 && col == 2 && gameBoard[1][1] == -1) {
+            if (gameBoard[0][0] == symbol) {
+                outerPowerPoint[0] = 0;
+                outerPowerPoint[1] = 0;
+            }
+        }
+
+        return outerPowerPoint;
     }
 
     public int[] getRandomOpenSpace() { // not really random
