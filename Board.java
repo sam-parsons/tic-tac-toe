@@ -5,6 +5,12 @@ import java.util.Random;
  * - getOuterPowerPoint
  * - Move 6
  * - Move 5 - when checking for an adjacent same symbol, check if it will form a PowerBloc!!
+ * - Move 5 - something keeps picking a corner that will fill a diag with the different symbols
+ * - Move 3 - should somehow consider corners first
+ * - Move 7 - make a method that checks if potential of three in a row diagonally are of different symbols
+ * 
+ * USEFUL METHOD
+ * - method to check second to last move produces stalemate and doesn't continue to last move
  */
 
 public class Board {
@@ -89,6 +95,9 @@ public class Board {
 
     public void printBoard() {
 
+        // char[] charArr = {'A', 'B', 'C', 'D', 'E'};
+        // int countChar = 0;
+
         System.out.print(" ");
         for (int i = 0; i < 11; i++) {
             if (i == 2 || i == 6 || i == 10) {
@@ -124,9 +133,10 @@ public class Board {
                         System.out.print("|");
                     } else if (j == 1 || j == 5 || j ==9) {
                         if (gameBoard[(int)Math.floor(i / 3)][(int)Math.floor((j-1) / 3)] == 0) {
-                            System.out.print("O");
+                            System.out.print("X"); // System.out.print((int)3/(j-1));
                         } else if (gameBoard[(int)Math.floor(i / 3)][(int)Math.floor((j-1) / 3)] == 1) {
-                            System.out.print("X");
+                            // countChar++;
+                            System.out.print("O"); // System.out.print();
                         } else {
                             System.out.print("_");
                         }
@@ -730,26 +740,10 @@ public class Board {
                             if (firstOpen[0] == -1) {
                                 firstOpen[0] = i;
                                 firstOpen[1] = j;
-                            }
-                        }
-                    }
-                }
-
-                for (int i = 0; i < 3; i ++) {
-                    for (int j = 0; j < 3; j++) {
-                        if (gameBoard[i][j] == -1 && i != firstOpen[0] && j != firstOpen[1]) {
-                            if (secondOpen[0] == -1) {
+                            } else if (secondOpen[0] == -1) {
                                 secondOpen[0] = i;
                                 secondOpen[1] = j;
-                            }
-                        }
-                    }
-                }
-
-                for (int i = 0; i < 3; i ++) {
-                    for (int j = 0; j < 3; j++) {
-                        if (gameBoard[i][j] == -1 && i != firstOpen[0] && j != firstOpen[1] && i != secondOpen[0] && j != secondOpen[1]) {
-                            if (thirdOpen[0] == -1) {
+                            } else if (thirdOpen[0] == -1) {
                                 thirdOpen[0] = i;
                                 thirdOpen[1] = j;
                             }
@@ -823,7 +817,7 @@ public class Board {
                 return finalMove;
             }
 
-        } else if (move == 7) { // second to last move
+        } else if (move == 7) { // Move 8
 
             if (gameBoard[1][1] != -1) {
                 int opposite;
@@ -849,15 +843,7 @@ public class Board {
                             if (firstOpen[0] == -1) {
                                 firstOpen[0] = i;
                                 firstOpen[1] = j;
-                            }
-                        }
-                    }
-                }
-
-                for (int i = 0; i < 3; i ++) {
-                    for (int j = 0; j < 3; j++) {
-                        if (gameBoard[i][j] == -1 && i != firstOpen[0] && j != firstOpen[1]) {
-                            if (secondOpen[0] == -1) {
+                            } else if (secondOpen[0] == -1) {
                                 secondOpen[0] = i;
                                 secondOpen[1] = j;
                             }
@@ -1814,14 +1800,55 @@ public class Board {
     public boolean checkWin(int rowCW, int colCW, int symbolCW) {
         boolean checkWin = false;
 
+        int tempCW = gameBoard[rowCW][colCW];
+
         this.addElement(rowCW, colCW, symbolCW);
         if (this.isWon() == -1) {
             
         } else if (this.isWon() == 0 || this.isWon() == 1) {
             checkWin = true;
         }
-        this.addElement(rowCW, colCW, -1);
+        this.addElement(rowCW, colCW, tempCW);
 
         return checkWin;
+    }
+
+    public boolean canBeWon() {
+        boolean canBeWon = false;
+
+        int[] firstOpenCBW = new int[2]; // array for first open coordinates
+        int[] secondOpenCBW = new int[2]; // array for second open coordinates
+
+        firstOpenCBW[0] = -1;
+        firstOpenCBW[1] = -1;
+        secondOpenCBW[0] = -1;
+        secondOpenCBW[1] = -1;
+
+        for (int i = 0; i < 3; i ++) {
+            for (int j = 0; j < 3; j++) {
+                if (gameBoard[i][j] == -1) {
+                    if (firstOpenCBW[0] == -1) {
+                        firstOpenCBW[0] = i;
+                        firstOpenCBW[1] = j;
+                    } else if (secondOpenCBW[0] == -1) {
+                        secondOpenCBW[0] = i;
+                        secondOpenCBW[1] = j;
+                    }
+                }
+            }
+        }
+
+
+        if (this.checkWin(firstOpenCBW[0], firstOpenCBW[1], 0)) {
+            canBeWon = true;
+        } else if (this.checkWin(firstOpenCBW[0], firstOpenCBW[1], 1)) {
+            canBeWon = true;
+        } else if (this.checkWin(secondOpenCBW[0], secondOpenCBW[1], 0)) {
+            canBeWon = true;
+        } else if (this.checkWin(secondOpenCBW[0], secondOpenCBW[1], 1)) {
+            canBeWon = true;
+        }
+
+        return canBeWon;
     }
 }

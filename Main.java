@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 /**
  * OPEN TICKETS
- * - Game should never progress after board is full
+ * - Account for prematurely ending the ninth move using similar strategy to eighth move
  * 
  * USEFUL DIAGNOSTICS
  * - print out game log to file
@@ -37,18 +37,36 @@ public class Main {
             while (gameLoop) {
 
                 board.printBoard();
-                int[] moveArrX = board.nextMove(1);
-                System.out.println("Next Move: " + (moveArrX[0] + 1) + ", " + (moveArrX[1] + 1));
+                if (board.getCount() != 7) {
+                    int[] moveArrX = board.nextMove(1);
+                    System.out.println("Next Move: " + (moveArrX[0] + 1) + ", " + (moveArrX[1] + 1));
 
-                System.out.println();
-                System.out.print("Player 'X' - Enter the row to be marked: ");
-                addXRow = scan.nextInt();
-                System.out.print("Player 'X' - Enter the column to be marked: ");
-                addXCol = scan.nextInt();
+                    System.out.println();
+                    System.out.print("Player 'X' - Enter the row to be marked: ");
+                    addXRow = scan.nextInt();
+                    System.out.print("Player 'X' - Enter the column to be marked: ");
+                    addXCol = scan.nextInt();
 
-                board.addElement(addXRow-1, addXCol-1, 1);
+                    board.addElement(addXRow-1, addXCol-1, 1);
 
-                if (board.isWon() == -1) {
+                } else {
+                    if (board.canBeWon()) {
+                        int[] moveArrX = board.nextMove(1);
+                        System.out.println("Next Move: " + (moveArrX[0] + 1) + ", " + (moveArrX[1] + 1));
+
+                        System.out.println();
+                        System.out.print("Player 'X' - Enter the row to be marked: ");
+                        addXRow = scan.nextInt();
+                        System.out.print("Player 'X' - Enter the column to be marked: ");
+                        addXCol = scan.nextInt();
+
+                        board.addElement(addXRow-1, addXCol-1, 1);
+                    } else {
+
+                    }
+                }
+                
+                if (board.isWon() == -1 && !board.isFull() && board.getCount() != 7) {
 
                     for (int i = 0; i < 40; i++) System.out.println();
                     board.printBoard();
@@ -63,10 +81,27 @@ public class Main {
 
                     board.addElement(addORow-1, addOCol-1, 0);
 
+                } else if (board.isWon() == -1 && !board.isFull() && board.getCount() == 7) {
+                    if (board.canBeWon()) {
+                        for (int i = 0; i < 40; i++) System.out.println();
+                        board.printBoard();
+                        int[] moveArrO = board.nextMove(0);
+                        System.out.println("Next Move: " + (moveArrO[0] + 1) + ", " + (moveArrO[1] + 1));
+
+                        System.out.println();
+                        System.out.print("Player 'O' - Enter the row to be marked: ");
+                        addORow = scan.nextInt();
+                        System.out.print("Player 'O' - Enter the column to be marked: ");
+                        addOCol = scan.nextInt();
+
+                        board.addElement(addORow-1, addOCol-1, 0);
+                    } else {
+
+                    }
                 }
 
-                if (board.isWon() == 1 || board.isWon() == 0) {
-                    System.out.println("Game won");
+                if (board.isWon() == 1 || board.isWon() == 0 || board.isFull() || (board.getCount() == 7 && board.canBeWon())) {
+                    System.out.println("Game Over");
                     gameLoop = false;
                 }
 
@@ -86,6 +121,7 @@ public class Main {
         board.printBoard();
         System.out.println();
         System.out.println("GAME OVER");
+        // print a winning scenario, or make method for it
 
     }
 
