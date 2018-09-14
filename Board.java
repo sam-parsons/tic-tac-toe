@@ -3,7 +3,6 @@ import java.util.Random;
 /**
  * OPEN TICKETS
  * - getOuterPowerPoint
- * - Move 6
  * - Move 5 - when checking for an adjacent same symbol, check if it will form a PowerBloc!!
  * - Move 5 - something keeps picking a corner that will fill a diag with the different symbols
  * - Move 3 - should somehow consider corners first
@@ -707,9 +706,244 @@ public class Board {
 
         } else if (move == 5) { // Sixth move
             
-            finalMove[0] = -1;
-            finalMove[1] = -1;
-            return finalMove;
+            if (gameBoard[1][1] != -1) {
+
+                int opposite;
+                if (symbol == 0) {
+                    opposite = 1;
+                } else {
+                    opposite = 0;
+                }
+
+                // setting up and retreiving data about all positions
+                int[] firstOpen = new int[2];
+                for (int i = 0; i < 2; i ++) firstOpen[i] = -1;
+                int[] secondOpen = new int[2];
+                for (int i = 0; i < 2; i ++) secondOpen[i] = -1;
+                int[] thirdOpen = new int[2];
+                for (int i = 0; i < 2; i ++) thirdOpen[i] = -1;
+                int[] fourthOpen = new int[2];
+                for (int i = 0; i < 2; i ++) fourthOpen[i] = -1;
+
+                int[] firstSame = new int[2];
+                for (int i = 0; i < 2; i ++) firstSame[i] = -1;
+                int[] secondSame = new int[2];
+                for (int i = 0; i < 2; i ++) secondSame[i] = -1;
+                
+                int[] firstOpp = new int[2];
+                for (int i = 0; i < 2; i ++) firstOpp[i] = -1;
+                int[] secondOpp = new int[2];
+                for (int i = 0; i < 2; i ++) secondOpp[i] = -1;
+                int[] thirdOpp = new int[2];
+                for (int i = 0; i < 2; i ++) thirdOpp[i] = -1;
+
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+
+                        if (gameBoard[i][j] == -1) {
+                            if (firstOpen[0] == -1) {
+                                firstOpen[0] = i;
+                                firstOpen[1] = j;
+                            } else if (secondOpen[0] == -1) {
+                                secondOpen[0] = i;
+                                secondOpen[1] = j;
+                            } else if (thirdOpen[0] == -1) {
+                                thirdOpen[0] = i;
+                                thirdOpen[1] = j;
+                            }
+
+                        } else if (gameBoard[i][j] == symbol) {
+
+                            if (firstSame[0] == -1) {
+                                firstSame[0] = i;
+                                firstSame[1] = j;
+                            } else if (secondSame[0] == -1) {
+                                secondSame[0] = i;
+                                secondSame[1] = j;
+                            }
+
+                        } else if (gameBoard[i][j] == opposite) {
+
+                            if (firstOpp[0] == -1) {
+                                firstOpp[0] = i;
+                                firstOpp[1] = j;
+                            } else if (secondOpp[0] == -1) {
+                                secondOpp[0] = i;
+                                secondOpp[1] = j;
+                            } else if (thirdOpp[0] == -1) {
+                                thirdOpp[0] = i;
+                                thirdOpp[1] = j;
+                            }
+
+
+                        }
+
+                    }
+                }
+
+                int[] tempArr1 = new int[4];
+                tempArr1[0] = firstOpp[0];
+                tempArr1[1] = firstOpp[1];
+                tempArr1[2] = secondOpp[0];
+                tempArr1[3] = secondOpp[1];
+                int[] tempArr2 = new int[4];
+                tempArr2[0] = secondOpp[0];
+                tempArr2[1] = secondOpp[1];
+                tempArr2[2] = thirdOpp[0];
+                tempArr2[3] = thirdOpp[1];
+                int[] tempArr3 = new int[4];
+                tempArr3[0] = firstOpp[0];
+                tempArr3[1] = firstOpp[1];
+                tempArr3[2] = thirdOpp[0];
+                tempArr3[3] = thirdOpp[1];
+
+                // test to see if any configuration of the three opposite symbols will form PowerBloc
+                if (this.isPowerBloc(tempArr1)) {
+
+                    int[] tempArrA = new int[2];
+                    tempArrA = this.getPowerPoint(tempArr1);
+                    finalMove[0] = tempArrA[0];
+                    finalMove[1] = tempArrA[1];
+                    return finalMove;
+
+                } else if (this.isPowerBloc(tempArr2)) {
+
+                    int[] tempArrB = new int[2];
+                    tempArrB = this.getPowerPoint(tempArr2);
+                    finalMove[0] = tempArrB[0];
+                    finalMove[1] = tempArrB[1];
+                    return finalMove;
+
+                } else if (this.isPowerBloc(tempArr3)) {
+
+                    int[] tempArrC = new int[2];
+                    tempArrC = this.getPowerPoint(tempArr3);
+                    finalMove[0] = tempArrC[0];
+                    finalMove[1] = tempArrC[1];
+                    return finalMove;
+
+                }
+
+                // look at combination of similar symbols
+                int[] tempArrSame = new int[4];
+                tempArrSame[0] = firstSame[0];
+                tempArrSame[1] = firstSame[1];
+                tempArrSame[2] = secondSame[0];
+                tempArrSame[3] = secondSame[1];
+
+                if (this.isPowerBloc(tempArrSame)) {
+
+                    int[] tempArrSamePP = new int[2];
+                    tempArrSamePP = this.getPowerPoint(tempArrSame);
+                    finalMove[0] = tempArrSamePP[0];
+                    finalMove[1] = tempArrSamePP[1];
+                    return finalMove;
+
+                }
+                
+                tempArrSame[2] = firstOpen[0];
+                tempArrSame[3] = firstOpen[1];
+                if (this.isPowerBloc(tempArrSame)) { // first same symbol and first open space
+
+                    finalMove[0] = tempArrSame[2];
+                    finalMove[1] = tempArrSame[3];
+                    return finalMove;
+
+                }
+                
+                tempArrSame[2] = secondOpen[0];
+                tempArrSame[3] = secondOpen[1];
+                if (this.isPowerBloc(tempArrSame)) { // first same symbol and second open space
+
+                    finalMove[0] = tempArrSame[2];
+                    finalMove[1] = tempArrSame[3];
+                    return finalMove;
+
+                }
+                
+                tempArrSame[2] = thirdOpen[0];
+                tempArrSame[3] = thirdOpen[1];
+                if (this.isPowerBloc(tempArrSame)) { // first same symbol and third open space
+
+                    finalMove[0] = tempArrSame[2];
+                    finalMove[1] = tempArrSame[3];
+                    return finalMove;
+
+                }
+                
+                tempArrSame[2] = fourthOpen[0];
+                tempArrSame[3] = fourthOpen[1];
+                if (this.isPowerBloc(tempArrSame)) { // first same symbol and fourth open space
+
+                    finalMove[0] = tempArrSame[2];
+                    finalMove[1] = tempArrSame[3];
+                    return finalMove;
+
+                }
+                
+                tempArrSame[0] = firstOpen[0];
+                tempArrSame[1] = firstOpen[1];
+                tempArrSame[2] = secondSame[0];
+                tempArrSame[3] = secondSame[1];
+                if (this.isPowerBloc(tempArrSame)) { // second same symbol and first open space
+
+                    finalMove[0] = tempArrSame[0];
+                    finalMove[1] = tempArrSame[1];
+                    return finalMove;
+
+                }
+                
+                tempArrSame[0] = secondOpen[0];
+                tempArrSame[1] = secondOpen[1];
+                if (this.isPowerBloc(tempArrSame)) { // second same symbol and second open space
+
+                    finalMove[0] = tempArrSame[0];
+                    finalMove[1] = tempArrSame[1];
+                    return finalMove;
+                    
+                }
+
+                tempArrSame[0] = secondOpen[0];
+                tempArrSame[1] = secondOpen[1];
+                if (this.isPowerBloc(tempArrSame)) { // second same symbol and third open space
+
+                    finalMove[0] = tempArrSame[0];
+                    finalMove[1] = tempArrSame[1];
+                    return finalMove;
+
+                }
+
+                tempArrSame[0] = secondOpen[0];
+                tempArrSame[1] = secondOpen[1];
+                if (this.isPowerBloc(tempArrSame)) { // second same symbol and fourth open space
+
+                    finalMove[0] = tempArrSame[0];
+                    finalMove[1] = tempArrSame[1];
+                    return finalMove;
+
+                }
+
+                // pick random spot that is adjacent to a similar symbol -- ?? is the last condition needed??
+
+                Random rand6 = new Random();
+                int rand6R = -1;
+                int rand6C = -1;
+                do {
+
+                    rand6R = rand6.nextInt(3);
+                    rand6C = rand6.nextInt(3);
+
+                } while (gameBoard[rand6R][rand6C] != -1); // maybe should check for adjacency
+
+                finalMove[0] = rand6R;
+                finalMove[1] = rand6C;
+                return finalMove;
+
+            } else {
+                finalMove[0] = 1;
+                finalMove[1] = 1;
+                return finalMove;
+            }
 
         } else if (move == 6) { // Seventh move
 
@@ -1132,7 +1366,19 @@ public class Board {
                 if (gameBoard[2][2] == -1) {
                     isPowerBloc = true;
                 }
-            }
+            } else if (row2 == 2 && col2 == 2) {
+                if (gameBoard[1][1] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 2 && col2 == 0) {
+                if (gameBoard[1][0] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 0 && col2 == 2) {
+                if (gameBoard[0][1] == -1) {
+                    isPowerBloc = true;
+                }
+            } 
         } else if (row1 == 0 && col1 == 1) {
             if (row2 == 0 && col2 == 0) {
                 if (gameBoard[0][2] == -1) {
@@ -1144,6 +1390,10 @@ public class Board {
                 }
             } else if (row2 == 1 && col2 == 1) {
                 if (gameBoard[2][1] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 2 && col2 == 1) {
+                if (gameBoard[1][1] == -1) {
                     isPowerBloc = true;
                 }
             }
@@ -1160,6 +1410,18 @@ public class Board {
                 if (gameBoard[2][0] == -1) {
                     isPowerBloc = true;
                 }
+            } else if (row2 == 2 && col2 == 0) {
+                if (gameBoard[1][1] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 2 && col2 == 2) {
+                if (gameBoard[1][2] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 0 && col2 == 0) {
+                if (gameBoard[0][1] == -1) {
+                    isPowerBloc = true;
+                }
             }
         } else if (row1 == 1 && col1 == 0) {
             if (row2 == 0 && col2 == 0) {
@@ -1172,6 +1434,10 @@ public class Board {
                 }
             } else if (row2 == 1 && col2 == 1) {
                 if (gameBoard[1][2] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 1 && col2 == 2) {
+                if (gameBoard[1][1] == -1) {
                     isPowerBloc = true;
                 }
             }
@@ -1222,6 +1488,10 @@ public class Board {
                 if (gameBoard[1][0] == -1) {
                     isPowerBloc = true;
                 }
+            } else if (row2 == 1 && col2 == 0) {
+                if (gameBoard[1][1] == -1) {
+                    isPowerBloc = true;
+                }
             }
         } else if (row1 == 2 && col1 == 0) {
             if (row2 == 1 && col2 == 0) {
@@ -1234,6 +1504,18 @@ public class Board {
                 }
             } else if (row2 == 1 && col2 == 1) {
                 if (gameBoard[0][2] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 0 && col2 == 0) {
+                if (gameBoard[1][0] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 2 && col2 == 2) {
+                if (gameBoard[2][1] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 0 && col2 == 2) {
+                if (gameBoard[1][1] == -1) {
                     isPowerBloc = true;
                 }
             }
@@ -1250,6 +1532,10 @@ public class Board {
                 if (gameBoard[0][1] == -1) {
                     isPowerBloc = true;
                 }
+            } else if (row2 == 0 && col2 == 1) {
+                if (gameBoard[1][1] == -1) {
+                    isPowerBloc = true;
+                }
             }
         } else if (row1 == 2 && col1 == 2) {
             if (row2 == 2 && col2 == 1) {
@@ -1262,6 +1548,18 @@ public class Board {
                 }
             } else if (row2 == 1 && col2 == 1) {
                 if (gameBoard[0][0] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 0 && col2 == 0) {
+                if (gameBoard[1][1] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 0 && col2 == 2) {
+                if (gameBoard[1][2] == -1) {
+                    isPowerBloc = true;
+                }
+            } else if (row2 == 2 && col2 == 0) {
+                if (gameBoard[2][1] == -1) {
                     isPowerBloc = true;
                 }
             }
@@ -1297,6 +1595,21 @@ public class Board {
                     powerPoint[0] = 2;
                     powerPoint[1] = 2;
                 }
+            } else if (row2 == 2 && col2 == 2) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 1;
+                }
+            } else if (row2 == 0 && col2 == 2) {
+                if (gameBoard[0][1] == -1) {
+                    powerPoint[0] = 0;
+                    powerPoint[1] = 1;
+                }
+            } else if (row2 == 2 && col2 == 0) {
+                if (gameBoard[1][0] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 0;
+                }
             }
         } else if (row1 == 0 && col1 == 1) {
             if (row2 == 0 && col2 == 0) {
@@ -1312,6 +1625,11 @@ public class Board {
             } else if (row2 == 1 && col2 == 1) {
                 if (gameBoard[2][1] == -1) {
                     powerPoint[0] = 2;
+                    powerPoint[1] = 1;
+                }
+            } else if (row2 == 2 && col2 == 1) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
                     powerPoint[1] = 1;
                 }
             }
@@ -1331,6 +1649,21 @@ public class Board {
                     powerPoint[0] = 2;
                     powerPoint[1] = 0;
                 }
+            } else if (row2 == 0 && col2 == 0) {
+                if (gameBoard[0][1] == -1) {
+                    powerPoint[0] = 0;
+                    powerPoint[1] = 1;
+                }
+            } else if (row2 == 2 && col2 == 2) {
+                if (gameBoard[1][2] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 2;
+                }
+            } else if (row2 == 2 && col2 == 0) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 1;
+                }
             }
         } else if (row1 == 1 && col1 == 0) {
             if (row2 == 0 && col2 == 0) {
@@ -1347,6 +1680,11 @@ public class Board {
                 if (gameBoard[1][2] == -1) {
                     powerPoint[0] = 1;
                     powerPoint[1] = 2;
+                }
+            } else if (row2 == 1 && col2 == 2) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 1;
                 }
             }
         } else if (row1 == 1 && col1 == 1) {
@@ -1407,6 +1745,11 @@ public class Board {
                     powerPoint[0] = 1;
                     powerPoint[1] = 0;
                 }
+            } else if (row2 == 1 && col2 == 0) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 1;
+                }
             }
         } else if (row1 == 2 && col1 == 0) {
             if (row2 == 1 && col2 == 0) {
@@ -1423,6 +1766,21 @@ public class Board {
                 if (gameBoard[0][2] == -1) {
                     powerPoint[0] = 0;
                     powerPoint[1] = 2;
+                }
+            } else if (row2 == 2 && col2 == 2) {
+                if (gameBoard[2][1] == -1) {
+                    powerPoint[0] = 2;
+                    powerPoint[1] = 1;
+                }
+            } else if (row2 == 0 && col2 == 2) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 1;
+                }
+            } else if (row2 == 0 && col2 == 0) {
+                if (gameBoard[0][1] == -1) {
+                    powerPoint[0] = 0;
+                    powerPoint[1] = 1;
                 }
             }
         } else if (row1 == 2 && col1 == 1) {
@@ -1441,6 +1799,11 @@ public class Board {
                     powerPoint[0] = 0;
                     powerPoint[1] = 1;
                 }
+            } else if (row2 == 0 && col2 == 1) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 1;
+                }
             }
         } else if (row1 == 2 && col1 == 2) {
             if (row2 == 2 && col2 == 1) {
@@ -1457,6 +1820,21 @@ public class Board {
                 if (gameBoard[0][0] == -1) {
                     powerPoint[0] = 0;
                     powerPoint[1] = 0;
+                }
+            } else if (row2 == 0 && col2 == 0) {
+                if (gameBoard[1][1] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 1;
+                }
+            } else if (row2 == 0 && col2 == 2) {
+                if (gameBoard[1][2] == -1) {
+                    powerPoint[0] = 1;
+                    powerPoint[1] = 2;
+                }
+            } else if (row2 == 2 && col2 == 0) {
+                if (gameBoard[2][1] == -1) {
+                    powerPoint[0] = 2;
+                    powerPoint[1] = 1;
                 }
             }
         }
