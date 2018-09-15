@@ -6,15 +6,13 @@ import java.util.Random;
  * 
  * OPEN TICKETS
  * - getOuterPowerPoint
- * - Move 2 - bias picking corners
- * = Move 5 - this move is very fucked up
+ * - Move 5 - this move is very fucked up
  * - Move 5 - when checking for an adjacent same symbol, check if it will form a PowerBloc!!
  * - Move 5 - something keeps picking a corner that will fill a diag with the different symbols
  * - Move 5 - needs method as described in Move 7
- * - Move 3 - should somehow consider corners first
  * - Move 7 - make a method that checks if potential of three in a row diagonally are of different symbols
- * - Move 7 check first if adding a symbol at any of the three open spaces could potentially form PowerBloc
- * - Move 8 - gets ArrayIndexOutOfBoundException: -1 for entering (1,1)
+ * - Move 7 - check first if adding a symbol at any of the three open spaces could potentially form PowerBloc
+ * - Move 7 - somehow there happens to be an infinite loop in here... -- SOMEHOW SOLVED?
  * 
  * USEFUL METHOD
  * - method to check second to last move produces stalemate and doesn't continue to last move
@@ -24,10 +22,10 @@ import java.util.Random;
  * - Move 2 - check
  * - Move 3 - check
  * - Move 4 - check
- * - Move 5
+ * - Move 5 - check?
  * - Move 6
  * - Move 7
- * - Move 8
+ * - Move 8 - check
  * - Move 9 - check
  */
 
@@ -209,8 +207,15 @@ public class Board {
                 }
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
-                        if (gameBoard[i][j] == opposite) {
+                        // Bond's move
+                        if (gameBoard[i][j] == opposite && this.isInnerOuter(i,j)) {
 
+                            int[] tempSS = this.getSlingshot(i, j);
+                            finalMove[0] = tempSS[0];
+                            finalMove[1] = tempSS[1];
+                            return finalMove;
+
+                        } else if (gameBoard[i][j] == opposite) {
                             if (i == 0 && j == 0) {
                                 if (gameBoard[i][j+1] == -1) {
                                     finalMove[0] = i;
@@ -241,7 +246,7 @@ public class Board {
                                     finalMove[1] = j;
                                     return finalMove;
                                 }
-                            } if (i == 1 && j == 0) {
+                            } else if (i == 1 && j == 0) {
                                 if (gameBoard[i-1][j] == -1) {
                                     finalMove[0] = i-1;
                                     finalMove[1] = j;
@@ -261,7 +266,7 @@ public class Board {
                                     finalMove[1] = j;
                                     return finalMove;
                                 }
-                            } if (i == 2 && j == 0) {
+                            } else if (i == 2 && j == 0) {
                                 if (gameBoard[i-1][j] == -1) {
                                     finalMove[0] = i-1;
                                     finalMove[1] = j;
@@ -589,9 +594,6 @@ public class Board {
                     int[] adjArr = new int[2];
                     int[] tempAdjArr = new int[4];
                     adjArr = getAdjacent(first[0], first[1]);
-                    for (int i = 0; i < 2; i++) {
-                        System.out.println(adjArr[i]);
-                    }
                     tempAdjArr[0] = first[0];
                     tempAdjArr[1] = first[1];
                     tempAdjArr[2] = adjArr[0];
@@ -600,10 +602,12 @@ public class Board {
 
                     // do the two adjacent spaces form PowerBloc, if not then 
 
-                    if (this.isPowerBloc(tempAdjArr)) {
-
-                        finalMove[0] = tempAdjArr[2];
-                        finalMove[1] = tempAdjArr[3];
+                    if (this.isPowerBloc(tempAdjArr)) { // need to find PowerPoint
+                        System.out.println("PowerBloc");
+                        int[] tempGPP = this.getPowerPoint(tempAdjArr);
+                        System.out.println("PowerPoints: " + tempGPP[0] + ", " + tempGPP[1]);
+                        finalMove[0] = tempGPP[0];
+                        finalMove[1] = tempGPP[1];
                         return finalMove;
 
                     } else { // if opposite symbols are adjacent, but don't form PowerBloc
@@ -1212,29 +1216,40 @@ public class Board {
                 secondOpen[0] = -1;
                 secondOpen[1] = -1;
 
+                int tempCount = 0;
                 for (int i = 0; i < 3; i ++) {
                     for (int j = 0; j < 3; j++) {
                         if (gameBoard[i][j] == -1) {
                             if (firstOpen[0] == -1) {
                                 firstOpen[0] = i;
                                 firstOpen[1] = j;
-                            } else if (secondOpen[0] == -1) {
+                            } else if (secondOpen[0] == -1 && tempCount == 1) {
                                 secondOpen[0] = i;
                                 secondOpen[1] = j;
                             }
+                            tempCount++;
                         }
                     }
                 }
 
-                // check is opposite symbol can win with either position
-                if (this.checkWin(firstOpen[0], firstOpen[0], opposite)) {
+                System.out.println("first open coordinates: " + firstOpen[0] + ", " + firstOpen[1]);
+                System.out.println("Can be won?");
+                System.out.println(this.checkWin(firstOpen[0], firstOpen[1], opposite));
+                System.out.println("second open coordinates: " + secondOpen[0] + ", " + secondOpen[1]);
+                System.out.println("can be won?");
+                System.out.println(this.checkWin(secondOpen[0], secondOpen[1], opposite));
 
+                // check is opposite symbol can win with either position
+                if (this.checkWin(firstOpen[0], firstOpen[1], opposite)) {
+
+                    System.out.println("Opposite can win with first open space");
                     finalMove[0] = firstOpen[0];
                     finalMove[1] = firstOpen[1];
                     return finalMove;
 
-                } else if (this.checkWin(secondOpen[0], secondOpen[0], opposite)) {
+                } else if (this.checkWin(secondOpen[0], secondOpen[1], opposite)) {
 
+                    System.out.println("Opposite can win with second open space");
                     finalMove[0] = secondOpen[0];
                     finalMove[1] = secondOpen[1];
                     return finalMove;
@@ -2352,17 +2367,21 @@ public class Board {
         secondOpenCBW[0] = -1;
         secondOpenCBW[1] = -1;
 
+        int tempCount = 0;
         for (int i = 0; i < 3; i ++) {
             for (int j = 0; j < 3; j++) {
                 if (gameBoard[i][j] == -1) {
                     if (firstOpenCBW[0] == -1) {
+                        System.out.println("created first open coordinates");
                         firstOpenCBW[0] = i;
                         firstOpenCBW[1] = j;
                     }
-                    if (secondOpenCBW[0] == -1) {
+                    if (this.getCount() == 7 && secondOpenCBW[0] == -1 && tempCount == 1) {
+                        System.out.println("created second open coordinates");
                         secondOpenCBW[0] = i;
                         secondOpenCBW[1] = j;
                     }
+                    tempCount++;
                 }
             }
         }
@@ -2370,11 +2389,14 @@ public class Board {
         // ensuring no ArrayOutOfBoundsException: -1
         if (firstOpenCBW[0] == -1) {
             firstOpenCBW[0] = 1;
-        } else if (firstOpenCBW[1] == -1) {
+        }
+        if (firstOpenCBW[1] == -1) {
             firstOpenCBW[1] = 1;
-        } else if (secondOpenCBW[0] == -1) {
+        }
+        if (secondOpenCBW[0] == -1) {
             secondOpenCBW[0] = 1;
-        } else if (secondOpenCBW[1] == -1) {
+        }
+        if (secondOpenCBW[1] == -1) {
             secondOpenCBW[1] = 1;
         }
 
@@ -2395,5 +2417,46 @@ public class Board {
         }
 
         return canBeWon;
+    }
+
+    public boolean isInnerOuter(int rowIO, int colIO) {
+        boolean isInnerOuter = false;
+
+        if (rowIO == 0 && colIO == 1) {
+            isInnerOuter = true;
+            return isInnerOuter;
+        } else if (rowIO == 1 && (colIO == 0 || colIO == 2)) {
+            isInnerOuter = true;
+            return isInnerOuter;
+        } else if (rowIO == 2 && colIO == 1) {
+            isInnerOuter = true;
+            return isInnerOuter;
+        }
+
+        return isInnerOuter;
+    }
+
+    public int[] getSlingshot(int rowGS, int colGS) { // returns slingshot coordinates for an inner outer position
+        int[] slingShot = new int[2];
+
+        if (rowGS == 0 && colGS == 1) {
+            slingShot[0] = 2;
+            slingShot[1] = 0;
+            return slingShot;
+        } else if (rowGS == 1 && colGS == 0) {
+            slingShot[0] = 2;
+            slingShot[1] = 2;
+            return slingShot;
+        } else if (rowGS == 1 && colGS == 2) {
+            slingShot[0] = 0;
+            slingShot[1] = 0;
+            return slingShot;
+        } else if (rowGS == 2 && colGS == 1) {
+            slingShot[0] = 0;
+            slingShot[1] = 2;
+            return slingShot;
+        }
+
+        return slingShot;
     }
 }

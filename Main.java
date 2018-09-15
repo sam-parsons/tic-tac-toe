@@ -62,7 +62,7 @@ public class Main {
 
                         board.addElement(addXRow-1, addXCol-1, 1);
                     } else {
-
+                        gameLoop = false;
                     }
                 } // expand to a check on Move 8
                 
@@ -81,6 +81,7 @@ public class Main {
                     board.addElement(addORow-1, addOCol-1, 0);
 
                 } else if (board.isWon() == -1 && !board.isFull() && board.getCount() == 7) {
+                    System.out.println("Eight pieces on board");
                     if (board.canBeWon()) {
                         board.printBoard();
                         int[] moveArrO = board.nextMove(0);
@@ -94,11 +95,11 @@ public class Main {
 
                         board.addElement(addORow-1, addOCol-1, 0);
                     } else {
-
+                        gameLoop = false;
                     }
                 } // expand to a check on Move 8
 
-                if (board.isWon() == 1 || board.isWon() == 0 || board.isFull() || (board.getCount() == 8 && board.canBeWon())) {
+                if (board.isWon() == 1 || board.isWon() == 0 || board.isFull() || (board.getCount() == 8 && !board.canBeWon())) {
                     System.out.println("Game Over");
                     gameLoop = false;
                 }
