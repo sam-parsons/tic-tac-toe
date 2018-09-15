@@ -1,15 +1,32 @@
 import java.util.Random;
 
 /**
+ * BIG QUESTION
+ * - Can every move be solved by the same set of instructions?
+ * 
  * OPEN TICKETS
  * - getOuterPowerPoint
+ * - Move 2 - bias picking corners
  * - Move 5 - when checking for an adjacent same symbol, check if it will form a PowerBloc!!
  * - Move 5 - something keeps picking a corner that will fill a diag with the different symbols
  * - Move 3 - should somehow consider corners first
  * - Move 7 - make a method that checks if potential of three in a row diagonally are of different symbols
+ * - Move 7 check first if adding a symbol at any of the three open spaces could potentially form PowerBloc
+ * - Move 8 - ArrayIndexOutOfBoundsException: -1 - WATCH FOR THIS
  * 
  * USEFUL METHOD
  * - method to check second to last move produces stalemate and doesn't continue to last move
+ * 
+ * MOVE CHECKLIST
+ * - Move 1 - check
+ * - Move 2 - check
+ * - Move 3 - check?
+ * - Move 4 - check?
+ * - Move 5
+ * - Move 6
+ * - Move 7
+ * - Move 8 - check?
+ * - Move 9 - check
  */
 
 public class Board {
@@ -164,12 +181,13 @@ public class Board {
                 do {
                     tempM1Row = randM1.nextInt(2);
                     tempM1Col = randM1.nextInt(2);
-                    if (tempM1Row == 1) {
+                    if (tempM1Row == 1 ) {
                         tempM1Row = 2;
-                    } else if (tempM1Col == 1) {
+                    }
+                    if (tempM1Col == 1) {
                         tempM1Col = 2;
                     }
-                } while (tempM1Row != 1 && tempM1Col != 1 && gameBoard[tempM1Row][tempM1Col] != -1);
+                } while (tempM1Row != 1 && tempM1Col != 1 && gameBoard[tempM1Row][tempM1Col] != -1 && (((tempM1Row == 0 || tempM1Row == 2) && (tempM1Col == 0 || tempM1Col == 2))));
 
                 finalMove[0] = tempM1Row;
                 finalMove[1] = tempM1Col;
@@ -2216,6 +2234,21 @@ public class Board {
             }
         }
 
+        // ensuring no ArrayOutOfBoundsException: -1
+        if (firstOpenCBW[0] == -1) {
+            firstOpenCBW[0] = 1;
+        } else if (firstOpenCBW[1] == -1) {
+            firstOpenCBW[1] = 1;
+        } else if (secondOpenCBW[0] == -1) {
+            secondOpenCBW[0] = 1;
+        } else if (secondOpenCBW[1] == -1) {
+            secondOpenCBW[1] = 1;
+        }
+
+        System.out.println(firstOpenCBW[0]);
+        System.out.println(firstOpenCBW[1]);
+        System.out.println(secondOpenCBW[0]);
+        System.out.println(secondOpenCBW[1]);
 
         if (this.checkWin(firstOpenCBW[0], firstOpenCBW[1], 0)) {
             canBeWon = true;

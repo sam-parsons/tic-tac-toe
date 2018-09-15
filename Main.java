@@ -100,7 +100,7 @@ public class Main {
                     }
                 }
 
-                if (board.isWon() == 1 || board.isWon() == 0 || board.isFull() || (board.getCount() == 7 && board.canBeWon())) {
+                if (board.isWon() == 1 || board.isWon() == 0 || board.isFull() || (board.getCount() == 8 && board.canBeWon())) {
                     System.out.println("Game Over");
                     gameLoop = false;
                 }
