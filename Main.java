@@ -37,6 +37,7 @@ public class Main {
             while (gameLoop) {
 
                 board.printBoard();
+                System.out.println();
                 if (board.getCount() != 7) {
                     int[] moveArrX = board.nextMove(1);
                     System.out.println("Next Move: " + (moveArrX[0] + 1) + ", " + (moveArrX[1] + 1));
@@ -46,6 +47,7 @@ public class Main {
                     addXRow = scan.nextInt();
                     System.out.print("Player 'X' - Enter the column to be marked: ");
                     addXCol = scan.nextInt();
+                    System.out.println();
 
                     board.addElement(addXRow-1, addXCol-1, 1);
 
@@ -59,6 +61,7 @@ public class Main {
                         addXRow = scan.nextInt();
                         System.out.print("Player 'X' - Enter the column to be marked: ");
                         addXCol = scan.nextInt();
+                        System.out.println();
 
                         board.addElement(addXRow-1, addXCol-1, 1);
                     } else {
@@ -69,6 +72,7 @@ public class Main {
                 if (board.isWon() == -1 && !board.isFull() && board.getCount() != 7) {
 
                     board.printBoard();
+                    System.out.println();
                     int[] moveArrO = board.nextMove(0);
                     System.out.println("Next Move: " + (moveArrO[0] + 1) + ", " + (moveArrO[1] + 1));
 
@@ -77,6 +81,7 @@ public class Main {
                     addORow = scan.nextInt();
                     System.out.print("Player 'O' - Enter the column to be marked: ");
                     addOCol = scan.nextInt();
+                    System.out.println();
 
                     board.addElement(addORow-1, addOCol-1, 0);
 
@@ -84,6 +89,7 @@ public class Main {
                     System.out.println("Eight pieces on board");
                     if (board.canBeWon()) {
                         board.printBoard();
+                        System.out.println();
                         int[] moveArrO = board.nextMove(0);
                         System.out.println("Next Move: " + (moveArrO[0] + 1) + ", " + (moveArrO[1] + 1));
 
@@ -92,6 +98,7 @@ public class Main {
                         addORow = scan.nextInt();
                         System.out.print("Player 'O' - Enter the column to be marked: ");
                         addOCol = scan.nextInt();
+                        System.out.println();
 
                         board.addElement(addORow-1, addOCol-1, 0);
                     } else {
