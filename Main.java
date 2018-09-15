@@ -64,11 +64,10 @@ public class Main {
                     } else {
 
                     }
-                }
+                } // expand to a check on Move 8
                 
                 if (board.isWon() == -1 && !board.isFull() && board.getCount() != 7) {
 
-                    for (int i = 0; i < 40; i++) System.out.println();
                     board.printBoard();
                     int[] moveArrO = board.nextMove(0);
                     System.out.println("Next Move: " + (moveArrO[0] + 1) + ", " + (moveArrO[1] + 1));
@@ -83,7 +82,6 @@ public class Main {
 
                 } else if (board.isWon() == -1 && !board.isFull() && board.getCount() == 7) {
                     if (board.canBeWon()) {
-                        for (int i = 0; i < 40; i++) System.out.println();
                         board.printBoard();
                         int[] moveArrO = board.nextMove(0);
                         System.out.println("Next Move: " + (moveArrO[0] + 1) + ", " + (moveArrO[1] + 1));
@@ -98,7 +96,7 @@ public class Main {
                     } else {
 
                     }
-                }
+                } // expand to a check on Move 8
 
                 if (board.isWon() == 1 || board.isWon() == 0 || board.isFull() || (board.getCount() == 8 && board.canBeWon())) {
                     System.out.println("Game Over");
