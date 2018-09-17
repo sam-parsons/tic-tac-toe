@@ -26,8 +26,13 @@
  * - Move 4 - check
  * - Move 5 - check
  * - Move 6 - check
+<<<<<<< HEAD
  * - Move 7 - after move calculations
  * - Move 8 - during and after move calculations
+=======
+ * - Move 7
+ * - Move 8 
+>>>>>>> 2a90cd284695c2e1558b1f41f83fbc98078c470c
  * - Move 9
  */
 
@@ -116,7 +121,11 @@ public class Board {
         // char[] charArr = {'A', 'B', 'C', 'D', 'E'};
         // int countChar = 0;
 
+<<<<<<< HEAD
         System.out.print("                   ");
+=======
+        System.out.print("         ");
+>>>>>>> 2a90cd284695c2e1558b1f41f83fbc98078c470c
         for (int i = 0; i < 11; i++) {
             if (i == 2 || i == 6 || i == 10) {
                 System.out.printf("%d", (int)Math.floor((i-2)/3) + 1);
@@ -128,7 +137,11 @@ public class Board {
         for (int i = 0; i < 9; i++) {
 
             System.out.println();
+<<<<<<< HEAD
             System.out.print("                  ");
+=======
+            System.out.print("        ");
+>>>>>>> 2a90cd284695c2e1558b1f41f83fbc98078c470c
             if (i == 1 || i == 4 || i == 7) {
                 System.out.printf("%d", (int)Math.floor((i-1)/3) + 1);
             } else {
