@@ -1,4 +1,4 @@
-import java.util.Random;
+ import java.util.Random;
 
 /**
  * BIG QUESTION
@@ -13,20 +13,22 @@ import java.util.Random;
  * - Move 7 - make a method that checks if potential of three in a row diagonally are of different symbols
  * - Move 7 - check first if adding a symbol at any of the three open spaces could potentially form PowerBloc
  * - Move 7 - somehow there happens to be an infinite loop in here... -- SOMEHOW SOLVED?
+ * - Move 9 - game should check for draw scenario where, yes the board can be won, but if it's not
+ * -          of the symbol who's turn it is
  * 
  * USEFUL METHOD
  * - method to check second to last move produces stalemate and doesn't continue to last move
  * 
- * MOVE CHECKLIST
+ * PRESENTATION CHECKLIST
  * - Move 1 - check
  * - Move 2 - check
  * - Move 3 - check
  * - Move 4 - check
- * - Move 5 - check?
- * - Move 6
- * - Move 7
- * - Move 8 - check
- * - Move 9 - check
+ * - Move 5 - check
+ * - Move 6 - check
+ * - Move 7 - after move calculations
+ * - Move 8 - during and after move calculations
+ * - Move 9
  */
 
 public class Board {
@@ -114,7 +116,7 @@ public class Board {
         // char[] charArr = {'A', 'B', 'C', 'D', 'E'};
         // int countChar = 0;
 
-        System.out.print(" ");
+        System.out.print("                   ");
         for (int i = 0; i < 11; i++) {
             if (i == 2 || i == 6 || i == 10) {
                 System.out.printf("%d", (int)Math.floor((i-2)/3) + 1);
@@ -124,7 +126,9 @@ public class Board {
         }
 
         for (int i = 0; i < 9; i++) {
+
             System.out.println();
+            System.out.print("                  ");
             if (i == 1 || i == 4 || i == 7) {
                 System.out.printf("%d", (int)Math.floor((i-1)/3) + 1);
             } else {
@@ -163,11 +167,12 @@ public class Board {
             }
         }
         System.out.println();
+        System.out.println();
     }
 
     public int[] nextMove(int symbol) {
         int move = this.getCount();
-        System.out.println("Move: " + (move + 1));
+        System.out.println("\t   Move: " + (move + 1));
         int[] finalMove = new int[2];
         if (move == 0) { // First move
             finalMove[0] = 1;
@@ -430,22 +435,22 @@ public class Board {
                     }
                 }
 
-                System.out.println("Opposite coordinates 1: " + first[0] + ", " + first[1]);
-                System.out.println("Opposite coordinates 2: " + second[0] + ", " + second[1]);
-                System.out.println(this.isAdjacent(first[0], first[1], opposite));
+                // System.out.println("Opposite coordinates 1: " + first[0] + ", " + first[1]);
+                // System.out.println("Opposite coordinates 2: " + second[0] + ", " + second[1]);
+                // System.out.println(this.isAdjacent(first[0], first[1], opposite));
 
                 // check if there are adjacent opposite symbols
                 if (this.isAdjacent(first[0], first[1], opposite)) {
 
-                    System.out.println("First opposite coordinates have an adjacent symbol");
+                    // System.out.println("First opposite coordinates have an adjacent symbol");
                     int[] adjArr = new int[2];
                     // get the coordinates for the adjacent opposite symbol
                     adjArr = this.getAdjacent(first[0], first[1]);
-                    System.out.print("Adjacent opposite symbol ");
-                    for (int i = 0; i < 2; i++) {
-                        System.out.print(adjArr[i] + " ");
-                    }
-                    System.out.println();
+                    // System.out.print("Adjacent opposite symbol ");
+                    // for (int i = 0; i < 2; i++) {
+                    //     System.out.print(adjArr[i] + " ");
+                    // }
+                    // System.out.println();
                     moveArr[0] = first[0];
                     moveArr[1] = first[1];
                     moveArr[2] = adjArr[0];
@@ -456,17 +461,17 @@ public class Board {
 
                     int[] outerArr = new int[2];
                     outerArr = this.getOuterMatch(first[0], first[1], opposite);
-                    System.out.println("outer opposite coordinates");
-                    for (int i = 0; i < 2; i++) {
-                        System.out.println(outerArr[i]);
-                    }
+                    // System.out.println("outer opposite coordinates");
+                    // for (int i = 0; i < 2; i++) {
+                    //     System.out.println(outerArr[i]);
+                    // }
                     moveArr[0] = first[0];
                     moveArr[1] = first[1];
                     moveArr[2] = outerArr[0];
                     moveArr[3] = outerArr[1];
 
                 } else {
-                    System.out.println("neither of those two caught");
+                    // System.out.println("neither of those two caught");
                 }
 
                 // find the position of a similar symbol
@@ -486,12 +491,12 @@ public class Board {
                 // checks if there at least one adjacent or outer match for the opposite symbol
                 if (moveArr[0] != -1) {
 
-                    System.out.println("Same symbol coordinates: ");
-                    for (int i = 0; i < 2; i++) System.out.println(tempArr[i]);
+                    // System.out.println("Same symbol coordinates: ");
+                    // for (int i = 0; i < 2; i++) System.out.println(tempArr[i]);
 
                     // if the potential third block forms a winning sequence
                     if (this.isPowerBloc(moveArr)) {
-                        System.out.println("PowerBloc");
+                        // System.out.println("PowerBloc");
 
                         int[] powerPoints = new int[2];
                         powerPoints = this.getPowerPoint(moveArr);
@@ -542,7 +547,7 @@ public class Board {
             } else {
                 finalMove[0] = 1;
                 finalMove[1] = 1;
-                System.out.println("Center not taken");
+                // System.out.println("Center not taken");
                 return finalMove; 
             }   
 
@@ -587,7 +592,7 @@ public class Board {
                     }
                 }
 
-                System.out.println("Opposite coordinates: " + first[0] + ", " + first[1]);
+                // System.out.println("Opposite coordinates: " + first[0] + ", " + first[1]);
 
                 if (this.isAdjacent(first[0], first[1], opposite)) {
 
@@ -598,7 +603,7 @@ public class Board {
                     tempAdjArr[1] = first[1];
                     tempAdjArr[2] = adjArr[0];
                     tempAdjArr[3] = adjArr[1];
-                    System.out.println("Adjacent coordinates: " + adjArr[0] + ", " + adjArr[1]);
+                    // System.out.println("Adjacent coordinates: " + adjArr[0] + ", " + adjArr[1]);
 
                     // do the two adjacent spaces form PowerBloc, if not then 
 
@@ -629,7 +634,7 @@ public class Board {
 
                             } else { // if there is not an open intermediate space
                                 // go to same symbol process
-                                System.out.println("no open intermediate space - to same symbol process");
+                                // System.out.println("no open intermediate space - to same symbol process");
                             }
         
                         } 
@@ -652,13 +657,13 @@ public class Board {
 
                     } else { // if there is not an open intermediate space
                             // go to same symbol process
-                            System.out.println("no open intermediate space - to same symbol process");
+                            // System.out.println("no open intermediate space - to same symbol process");
                     }
 
                 } 
 
                 // finished checking on opposite symbols, begin same symbol process
-                System.out.println("Same symbol process");
+                // System.out.println("Same symbol process");
 
                 if (this.isAdjacent(second[0], second[1], symbol)) {
 
@@ -680,7 +685,7 @@ public class Board {
                     } else { // if there are adjacent same symbols, but not PowerBloc
 
                         // go to finding outer match for same symbol
-                        System.out.println("Adjacent same symbols, but not PowerBloc");
+                        // System.out.println("Adjacent same symbols, but not PowerBloc");
 
                     }
 
@@ -689,7 +694,7 @@ public class Board {
                 if (this.isOuterMatch(second[0], second[1], symbol)) {
 
                     // for outer ring same symbols
-                    System.out.println("Found outer match for same symbol");
+                    // System.out.println("Found outer match for same symbol");
 
                     int[] outerMatchArr = this.getOuterMatch(second[0], second[1], symbol);
                     int[] outerMatchPP = this.getOuterPowerPoint(second, symbol);
@@ -700,7 +705,7 @@ public class Board {
                         return finalMove;
 
                     } else { // there is not an intermediate free space between the outer matches
-                        System.out.println("No free space between outer matches of same symbol");
+                        // System.out.println("No free space between outer matches of same symbol");
                     }
 
                 } 
@@ -711,7 +716,7 @@ public class Board {
                     // same symbols, then randomly pick an open position that is adjacent
                     // to some same symbol
 
-                    System.out.println("Finding random adjacent to same symbol open space");
+                    // System.out.println("Finding random adjacent to same symbol open space");
                     Random randLast = new Random();
                     int tempLast1 = -1;
                     int tempLast2 = -1;
@@ -1232,24 +1237,24 @@ public class Board {
                     }
                 }
 
-                System.out.println("first open coordinates: " + firstOpen[0] + ", " + firstOpen[1]);
-                System.out.println("Can be won?");
-                System.out.println(this.checkWin(firstOpen[0], firstOpen[1], opposite));
-                System.out.println("second open coordinates: " + secondOpen[0] + ", " + secondOpen[1]);
-                System.out.println("can be won?");
-                System.out.println(this.checkWin(secondOpen[0], secondOpen[1], opposite));
+                // System.out.println("first open coordinates: " + firstOpen[0] + ", " + firstOpen[1]);
+                // System.out.println("Can be won?");
+                // System.out.println(this.checkWin(firstOpen[0], firstOpen[1], opposite));
+                // System.out.println("second open coordinates: " + secondOpen[0] + ", " + secondOpen[1]);
+                // System.out.println("can be won?");
+                // System.out.println(this.checkWin(secondOpen[0], secondOpen[1], opposite));
 
                 // check is opposite symbol can win with either position
                 if (this.checkWin(firstOpen[0], firstOpen[1], opposite)) {
 
-                    System.out.println("Opposite can win with first open space");
+                    // System.out.println("Opposite can win with first open space");
                     finalMove[0] = firstOpen[0];
                     finalMove[1] = firstOpen[1];
                     return finalMove;
 
                 } else if (this.checkWin(secondOpen[0], secondOpen[1], opposite)) {
 
-                    System.out.println("Opposite can win with second open space");
+                    // System.out.println("Opposite can win with second open space");
                     finalMove[0] = secondOpen[0];
                     finalMove[1] = secondOpen[1];
                     return finalMove;
@@ -1285,7 +1290,7 @@ public class Board {
                     
                 } while (gameBoard[temp1Open][temp2Open] != -1);
 
-                System.out.println("Random coordinates");
+                // System.out.println("Random coordinates");
                 finalMove[0] = temp1Open;
                 finalMove[1] = temp2Open;
                 return finalMove;
@@ -1323,7 +1328,7 @@ public class Board {
     public boolean isAdjacent(int row, int col, int symbolIA) {
         boolean isAdjacent = false;
 
-        System.out.println("Checking for adjacency on coordinates: " + row + ", " + col + " for symbol: "+ symbolIA);
+        // System.out.println("Checking for adjacency on coordinates: " + row + ", " + col + " for symbol: "+ symbolIA);
 
         if (row == 0 && col == 0) {
             if (gameBoard[0][1] == symbolIA) {
@@ -1358,7 +1363,7 @@ public class Board {
                 isAdjacent = true;
             }
         } else if (row == 1 && col == 1) {
-            System.out.println("checking (1,1):");
+            // System.out.println("checking (1,1):");
             int adjCount = 0;
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -1366,7 +1371,7 @@ public class Board {
                         adjCount++;
                         if (adjCount > 1) {
                             isAdjacent = true;
-                            System.out.println("Adjacent coordinates: " + i + ", " + j);
+                            // System.out.println("Adjacent coordinates: " + i + ", " + j);
                         }
                     }
                 }
@@ -2372,12 +2377,12 @@ public class Board {
             for (int j = 0; j < 3; j++) {
                 if (gameBoard[i][j] == -1) {
                     if (firstOpenCBW[0] == -1) {
-                        System.out.println("created first open coordinates");
+                        // System.out.println("created first open coordinates");
                         firstOpenCBW[0] = i;
                         firstOpenCBW[1] = j;
                     }
                     if (this.getCount() == 7 && secondOpenCBW[0] == -1 && tempCount == 1) {
-                        System.out.println("created second open coordinates");
+                        // System.out.println("created second open coordinates");
                         secondOpenCBW[0] = i;
                         secondOpenCBW[1] = j;
                     }
@@ -2400,11 +2405,11 @@ public class Board {
             secondOpenCBW[1] = 1;
         }
 
-        System.out.println("CanBeWon Open Coordinates");
-        System.out.println(firstOpenCBW[0]);
-        System.out.println(firstOpenCBW[1]);
-        System.out.println(secondOpenCBW[0]);
-        System.out.println(secondOpenCBW[1]);
+        // System.out.println("CanBeWon Open Coordinates");
+        // System.out.println(firstOpenCBW[0]);
+        // System.out.println(firstOpenCBW[1]);
+        // System.out.println(secondOpenCBW[0]);
+        // System.out.println(secondOpenCBW[1]);
 
         if (this.checkWin(firstOpenCBW[0], firstOpenCBW[1], 0)) {
             canBeWon = true;
